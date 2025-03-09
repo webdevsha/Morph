@@ -36,6 +36,22 @@ type CourseUnit = {
   };
 };
 
+type CustomizedUnit = {
+  title: string;
+  description: string;
+  rolePlay: {
+    scenario: string;
+    objectives: string[];
+    setup: string;
+    keyQuestions: string[];
+  };
+  relevantNews: Array<{
+    title: string;
+    url: string;
+    relevance: string;
+  }>;
+};
+
 const LocalizationForm = ({ onSave, initialContext }: {
   onSave: (context: LocalizationContext) => void;
   initialContext?: UserContext;
@@ -298,6 +314,37 @@ export default function EcosystemMapper() {
   const [showRegistration] = useState(true);
   const [courseUnits, setCourseUnits] = useState<CourseUnit[]>([]);
   const [isLoadingUnits, setIsLoadingUnits] = useState(false);
+  const [customizedBlueDot, setCustomizedBlueDot] = useState<CustomizedUnit | null>(null);
+  const [isLoadingBlueDot, setIsLoadingBlueDot] = useState(false);
+
+  // Get user context and load BlueDot content if available
+  useEffect(() => {
+    const url = localStorage.getItem('importUrl');
+    const background = localStorage.getItem('userBackground');
+
+    if (url && background) {
+      setIsLoadingBlueDot(true);
+      fetch('/api/customize-unit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url, background })
+      })
+        .then(res => res.json())
+        .then(data => {
+          setCustomizedBlueDot(data.customizedUnit);
+        })
+        .catch(error => {
+          console.error('Failed to load BlueDot unit:', error);
+          toast({
+            title: "Error",
+            description: "Failed to load BlueDot content",
+            variant: "destructive"
+          });
+        })
+        .finally(() => setIsLoadingBlueDot(false));
+    }
+  }, [toast]);
+
 
   // Get user context
   const selectedPersona = localStorage.getItem('selectedPersona') || 'learner';
@@ -470,7 +517,75 @@ export default function EcosystemMapper() {
                   </section>
                 ))}
 
-                {/* Core Course Units */}
+                {/* BlueDot Integration - show if available */}
+                {isLoadingBlueDot ? (
+                  <div className="flex items-center justify-center p-12">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                ) : customizedBlueDot && (
+                  <section className="space-y-4 mt-12 pt-12 border-t">
+                    <h2 className="text-2xl font-semibold flex items-center gap-2">
+                      <span>Your BlueDot Course Integration</span>
+                      <Badge variant="outline">Imported</Badge>
+                    </h2>
+
+                    <Card className="p-6 border-2 border-primary/20">
+                      <div className="space-y-6">
+                        <div>
+                          <h3 className="text-xl font-semibold mb-2">{customizedBlueDot.title}</h3>
+                          <p className="text-muted-foreground">{customizedBlueDot.description}</p>
+                        </div>
+
+                        <div className="grid gap-6">
+                          <div>
+                            <h4 className="text-lg font-medium mb-3">Interactive Exercise</h4>
+                            <Card className="p-4 bg-primary/5">
+                              <p className="text-muted-foreground">{customizedBlueDot.rolePlay.scenario}</p>
+                              <div className="mt-3">
+                                <span className="text-sm font-medium">Key Objectives:</span>
+                                <ul className="list-disc list-inside mt-1">
+                                  {customizedBlueDot.rolePlay.objectives.map((obj, i) => (
+                                    <li key={i} className="text-sm text-muted-foreground">{obj}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            </Card>
+                          </div>
+
+                          <div>
+                            <h4 className="text-lg font-medium mb-3">Related Context</h4>
+                            <div className="grid gap-3">
+                              {customizedBlueDot.relevantNews.map((news, i) => (
+                                <a
+                                  key={i}
+                                  href={news.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="block p-3 rounded-lg border hover:bg-accent/5 transition-colors"
+                                >
+                                  <h5 className="font-medium mb-1">{news.title}</h5>
+                                  <p className="text-sm text-muted-foreground">{news.relevance}</p>
+                                </a>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex justify-end">
+                          <Button
+                            variant="outline"
+                            onClick={() => setLocation('/bluedot-customization')}
+                            className="flex items-center gap-2"
+                          >
+                            <span>View Full Details</span>
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  </section>
+                )}
+
+                {/* Continue with Core Course Units section */}
                 <div className="space-y-6">
                   <h2 className="text-2xl font-semibold">Core Learning Units 📚</h2>
                   <div className="grid gap-6">
