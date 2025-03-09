@@ -318,6 +318,72 @@ Response format must be JSON:
     }
   });
 
+  // Add this new endpoint after existing endpoints
+  app.post("/api/customize-course", async (req, res) => {
+    try {
+      const { background } = req.body;
+
+      const prompt = `Given a learner with this background: "${background}", customize these AI Impact course units:
+
+1. Understanding AI Systems
+2. AI Impact on Society
+3. Future of AI and Safety
+
+For each unit, provide:
+- A customized title that relates to their background
+- A description that connects the topic to their field
+- Specific examples from their domain
+- Learning outcomes relevant to their expertise
+
+Response format must be JSON:
+{
+  "units": [
+    {
+      "title": "string",
+      "description": "string",
+      "examples": ["string"],
+      "outcomes": ["string"]
+    }
+  ]
+}`;
+
+      const completion = await anthropic.messages.create({
+        max_tokens: 1024,
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        model: 'claude-3-opus-20240229',
+        system: 'You are an AI education expert specializing in personalizing learning paths.',
+      });
+
+      // Extract the first content block text
+      const messageContent = completion.content[0].text || '';
+
+      // Extract JSON from the response text
+      const jsonMatch = messageContent.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error('No valid JSON found in response');
+      }
+
+      const customizedContent = JSON.parse(jsonMatch[0]);
+
+      // Validate response structure
+      if (!customizedContent.units || !Array.isArray(customizedContent.units)) {
+        throw new Error('Invalid response format');
+      }
+
+      res.json(customizedContent);
+    } catch (error: any) {
+      console.error('Course customization error:', error);
+      res.status(500).json({
+        error: error.message || 'Failed to customize course content'
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
