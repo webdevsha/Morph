@@ -4,20 +4,53 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BackgroundAnalyzer } from "@/components/background-analyzer";
-import { AlertCircle } from "lucide-react";
-import { personas, aiSafetyStats } from "@/data/personaData";
 import { CourseImporter } from "@/components/course-importer";
+
+const personas = [
+  {
+    id: 'technical',
+    image: "/personas/technical.jpg",
+    title: "Technical Path",
+    description: "For engineers, researchers, and technical professionals looking to understand and implement AI safety principles in their work.",
+  },
+  {
+    id: 'regional',
+    image: "/personas/regional.jpg",
+    title: "Regional Path",
+    description: "Customized learning paths for regions without frontier AI development, focusing on local context and regional AI safety needs.",
+  },
+  {
+    id: 'family',
+    image: "/personas/family.jpg",
+    title: "Family Path",
+    description: "Designed for parents and families to understand AI safety impacts on daily life and guide children in the AI era.",
+  }
+];
+
+const aiSafetyStats = [
+  {
+    value: "1000+",
+    title: "AI Safety Scenarios",
+    description: "Comprehensive database of real-world AI safety considerations and case studies"
+  },
+  {
+    value: "50+",
+    title: "Learning Pathways",
+    description: "Personalized routes to understanding AI safety based on your background"
+  },
+  {
+    value: "24/7",
+    title: "Global Access",
+    description: "Continuous learning opportunities adapted to your timezone and region"
+  }
+];
 
 export function PersonaSelector() {
   const [, setLocation] = useLocation();
 
   const handlePersonaSelect = (persona: typeof personas[0]) => {
     localStorage.setItem('selectedPersona', persona.id);
-    if (persona.id === 'parent') {
-      setLocation('/tools');
-    } else {
-      setLocation('/ecosystem');
-    }
+    setLocation('/ecosystem');
   };
 
   return (
@@ -65,30 +98,27 @@ export function PersonaSelector() {
 
         {/* Choose Your Path Section */}
         <div className="mb-12">
-          <h2 className="text-2xl font-semibold flex items-center gap-2 mb-6">
-            <span>Or Choose Your Path</span> 
-            <span className="text-2xl">🎯</span>
-          </h2>
-          <div className="grid grid-cols-1 gap-6">
+          <h2 className="text-2xl font-semibold mb-6">Choose Your Path</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {personas.map((persona) => (
               <Card 
                 key={persona.id}
-                className="p-6 cursor-pointer hover:shadow-lg transition-all border-primary/20 hover:border-primary bg-primary/5"
+                className="p-6 cursor-pointer hover:shadow-lg transition-all border-primary/20 hover:border-primary"
                 onClick={() => handlePersonaSelect(persona)}
               >
-                <div className="flex items-center gap-8">
-                  <img
-                    src={persona.image}
-                    alt={persona.id}
-                    className="w-40 h-40 object-cover rounded-lg"
-                  />
-                  <div className="flex-1">
-                    <h2 className="text-2xl font-semibold mb-3">{persona.question}</h2>
-                    <p className="text-muted-foreground text-lg mb-4">{persona.description}</p>
-                    <Button className="bg-primary/10 hover:bg-primary/20 text-primary hover:text-primary">
-                      Select Path ✨
-                    </Button>
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-full h-48 mb-4 overflow-hidden rounded-lg">
+                    <img
+                      src={persona.image}
+                      alt={persona.id}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
+                  <h3 className="text-xl font-semibold mb-3">{persona.title}</h3>
+                  <p className="text-muted-foreground mb-4">{persona.description}</p>
+                  <Button className="w-full bg-primary/10 hover:bg-primary/20 text-primary hover:text-primary">
+                    Select Path ✨
+                  </Button>
                 </div>
               </Card>
             ))}
@@ -98,7 +128,7 @@ export function PersonaSelector() {
         {/* Get Personalized Path Section */}
         <div className="space-y-6">
           <h2 className="text-2xl font-semibold flex items-center gap-2">
-            <span>Get Personalized Path</span>
+            <span>Get Custom Path</span>
             <span className="text-2xl">🎨</span>
           </h2>
           <BackgroundAnalyzer onPersonaSelect={(persona) => {
