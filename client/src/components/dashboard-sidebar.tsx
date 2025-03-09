@@ -7,7 +7,8 @@ import {
   BookOpen, 
   Wrench, 
   LogOut,
-  Map
+  Map,
+  HeartHandshake
 } from "lucide-react";
 
 export function DashboardSidebar() {
@@ -38,6 +39,13 @@ export function DashboardSidebar() {
               <Button variant="ghost" className="w-full justify-start">
                 <Wrench className="mr-2 h-4 w-4" />
                 Tools
+              </Button>
+            </Link>
+
+            <Link href="/philosophy">
+              <Button variant="ghost" className="w-full justify-start">
+                <HeartHandshake className="mr-2 h-4 w-4" />
+                Our Philosophy
               </Button>
             </Link>
           </nav>

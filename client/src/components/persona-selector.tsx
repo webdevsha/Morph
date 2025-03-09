@@ -77,23 +77,27 @@ export function PersonaSelector() {
               <span>Choose Your Path</span> 
               <span className="text-2xl">🎯</span>
             </h2>
-            <div className="grid gap-8">
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2"> {/* Added grid-cols-2 for medium screens and up */}
               {personas.map((persona) => (
                 <Card 
                   key={persona.id}
-                  className="p-6 cursor-pointer hover:shadow-lg transition-all border-primary/20 hover:border-primary"
+                  className="p-6 cursor-pointer hover:shadow-lg transition-all border-primary/20 hover:border-primary bg-primary/5"
                   onClick={() => handlePersonaSelect(persona)}
                 >
-                  <img
-                    src={persona.image}
-                    alt={persona.id}
-                    className="w-full h-48 object-cover rounded-lg mb-4"
-                  />
-                  <h2 className="text-xl font-semibold mb-2">{persona.question}</h2>
-                  <p className="text-muted-foreground mb-4">{persona.description}</p>
-                  <Button className="w-full bg-primary/10 hover:bg-primary/20 text-primary hover:text-primary">
-                    Select Path
-                  </Button>
+                  <div className="flex items-start gap-6">
+                    <img
+                      src={persona.image}
+                      alt={persona.id}
+                      className="w-32 h-32 object-cover rounded-lg"
+                    />
+                    <div className="flex-1">
+                      <h2 className="text-xl font-semibold mb-2">{persona.question}</h2>
+                      <p className="text-muted-foreground mb-4">{persona.description}</p>
+                      <Button className="w-full bg-primary/10 hover:bg-primary/20 text-primary hover:text-primary">
+                        Select Path ✨
+                      </Button>
+                    </div>
+                  </div>
                 </Card>
               ))}
             </div>
