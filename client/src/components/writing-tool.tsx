@@ -102,7 +102,7 @@ export function WritingTool() {
   const renderAIFeedback = (feedbackType: keyof AIFeedback) => {
     if (isGenerating) {
       return (
-        <div className="flex items-center gap-2 text-muted-foreground">
+        <div className="flex items-center gap-2 text-muted-foreground mt-4">
           <Loader2 className="h-4 w-4 animate-spin" />
           Generating AI feedback...
         </div>
@@ -113,24 +113,24 @@ export function WritingTool() {
     if (!feedback) return null;
 
     return (
-      <div className="mt-4 p-4 bg-primary/5 rounded-lg space-y-2">
+      <div className="mt-6 p-6 bg-primary/5 rounded-lg space-y-4 border border-primary/10">
         <div className="flex items-center gap-2 text-primary font-medium">
           <Sparkles className="h-4 w-4" />
           AI Suggestions
         </div>
         {Array.isArray(feedback) ? (
-          <ul className="list-disc list-inside space-y-1 text-sm">
+          <ul className="list-disc list-inside space-y-2 text-sm">
             {feedback.map((item, i) => (
-              <li key={i}>{item}</li>
+              <li key={i} className="text-muted-foreground">{item}</li>
             ))}
           </ul>
         ) : (
           Object.entries(feedback).map(([key, items]) => (
-            <div key={key}>
+            <div key={key} className="space-y-2">
               <h4 className="font-medium capitalize">{key}:</h4>
-              <ul className="list-disc list-inside space-y-1 text-sm">
+              <ul className="list-disc list-inside space-y-2 text-sm">
                 {items.map((item: string, i: number) => (
-                  <li key={i}>{item}</li>
+                  <li key={i} className="text-muted-foreground">{item}</li>
                 ))}
               </ul>
             </div>
@@ -165,7 +165,7 @@ export function WritingTool() {
         <div className="space-y-6">
           <div>
             <div className="flex gap-2">
-              <Input 
+              <Input
                 placeholder="Enter an idea"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
@@ -175,8 +175,8 @@ export function WritingTool() {
                   }
                 }}
               />
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="icon"
                 onClick={() => {
                   const input = document.querySelector('input') as HTMLInputElement;
@@ -298,7 +298,7 @@ export function WritingTool() {
           </div>
 
           <div>
-            <Input 
+            <Input
               placeholder="Enter a headline following the guidelines"
               className="mb-2"
               onKeyDown={(e) => {
