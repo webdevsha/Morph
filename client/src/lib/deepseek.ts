@@ -59,7 +59,7 @@ Format the response as:
 
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024
+      model: "deepseek-chat",  // Using DeepSeek's chat model
       messages: [
         { role: "system", content: "You are an AI safety education expert with deep knowledge of regional contexts and cultural considerations." },
         { role: "user", content: prompt }
@@ -71,9 +71,17 @@ Format the response as:
       throw new Error('Empty response from API');
     }
 
-    return JSON.parse(response.choices[0].message.content);
-  } catch (error) {
+    const content = JSON.parse(response.choices[0].message.content);
+
+    // Validate the response structure
+    if (!content.resources || !Array.isArray(content.resources)) {
+      throw new Error('Invalid response format: missing resources array');
+    }
+
+    return content;
+  } catch (error: any) {
     console.error('Error generating localized resources:', error);
-    throw error;
+    // Provide more specific error message based on the error type
+    throw new Error(error.message || 'Failed to generate localized content');
   }
 }
