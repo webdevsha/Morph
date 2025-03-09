@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ExternalLink, BookOpen, Users, GraduationCap, Globe, Loader2, MessageSquare, AlertCircle } from "lucide-react";
+import { ExternalLink, BookOpen, Users, GraduationCap, Globe, Loader2, MessageSquare, AlertCircle, Clock } from "lucide-react";
 import { useState, useEffect } from "react";
 import {
   Dialog,
@@ -465,14 +465,90 @@ export default function EcosystemMapper() {
                   </section>
                 ))}
 
-                {/* Customized Course Units */}
+                {/* Core Course Units */}
+                <div className="space-y-6">
+                  <h2 className="text-2xl font-semibold">Core Learning Units 📚</h2>
+                  <div className="grid gap-6">
+                    <Card className="p-6 hover:shadow-lg transition-all">
+                      <div className="flex items-start gap-4">
+                        <div className="rounded-full p-2 bg-primary/10">
+                          <BookOpen className="h-6 w-6 text-primary" />
+                        </div>
+                        <div className="space-y-4 flex-1">
+                          <div>
+                            <h4 className="text-xl font-semibold mb-2">Beyond chatbots: the expanding frontier of AI capabilities</h4>
+                            <p className="text-muted-foreground">
+                              Explore how current AI systems like ChatGPT work and understand their rapid evolution in recent years.
+                              Discover the key mechanisms driving modern AI advancement.
+                            </p>
+                            <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
+                              <Clock className="h-4 w-4" />
+                              <span>45 minutes</span>
+                              <span className="mx-2">•</span>
+                              <span>2 exercises</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+
+                    <Card className="p-6 hover:shadow-lg transition-all">
+                      <div className="flex items-start gap-4">
+                        <div className="rounded-full p-2 bg-primary/10">
+                          <BookOpen className="h-6 w-6 text-primary" />
+                        </div>
+                        <div className="space-y-4 flex-1">
+                          <div>
+                            <h4 className="text-xl font-semibold mb-2">Artificial general intelligence: on the horizon?</h4>
+                            <p className="text-muted-foreground">
+                              Understand what AGI is, assess current progress towards achieving it, and explore why even skeptics believe it may arrive soon.
+                            </p>
+                            <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
+                              <Clock className="h-4 w-4" />
+                              <span>30 minutes</span>
+                              <span className="mx-2">•</span>
+                              <span>2 quizzes, 2 exercises</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+
+                    <Card className="p-6 hover:shadow-lg transition-all">
+                      <div className="flex items-start gap-4">
+                        <div className="rounded-full p-2 bg-primary/10">
+                          <BookOpen className="h-6 w-6 text-primary" />
+                        </div>
+                        <div className="space-y-4 flex-1">
+                          <div>
+                            <h4 className="text-xl font-semibold mb-2">AGI will drastically change how we live, for better or worse</h4>
+                            <p className="text-muted-foreground">
+                              Examine the potential impacts of AGI on society, from unprecedented benefits to critical risks.
+                              Learn about key choices we must make to ensure AI benefits humanity.
+                            </p>
+                            <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
+                              <Clock className="h-4 w-4" />
+                              <span>45 minutes</span>
+                              <span className="mx-2">•</span>
+                              <span>4 exercises</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  </div>
+                </div>
+
+                {/* Customized Course Units - shown after the default units */}
                 {isLoadingUnits ? (
                   <div className="flex items-center justify-center p-12">
                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
                   </div>
                 ) : courseUnits.length > 0 && (
-                  <div className="space-y-6">
-                    <h2 className="text-2xl font-semibold">Customized Learning Units 📚</h2>
+                  <div className="space-y-6 mt-12 pt-12 border-t">
+                    <h2 className="text-2xl font-semibold">
+                      Customized for Your {userBackground} Background 🎯
+                    </h2>
                     <div className="grid gap-6">
                       {courseUnits.map((unit, index) => (
                         <Card key={index} className="p-6 hover:shadow-lg transition-all">
