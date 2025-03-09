@@ -30,7 +30,6 @@ Interests: ${context.interests}
 Please provide a JSON response with:
 1. Localized resources (papers, courses, organizations)
 2. Regional case studies
-3. Cultural context adaptations
 
 Format the response as:
 {
