@@ -19,7 +19,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import type { Pathway } from "@shared/schema";
-import { generateLocalizedResources, type LocalizationContext } from "@/lib/deepseek";
+import { generateLocalizedResources, type LocalizationContext } from "@/lib/ai-localization";
 
 type UserContext = {
   region: string;
