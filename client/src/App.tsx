@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/hooks/use-auth";
 import HomePage from "@/pages/home-page";
 import AuthPage from "@/pages/auth-page";
+import Ecosystem from "@/pages/ecosystem";
 import EcosystemMapper from "@/pages/ecosystem-mapper";
 import NotFound from "@/pages/not-found";
 import { ProtectedRoute } from "./lib/protected-route";
@@ -23,7 +24,8 @@ function Router() {
         <Switch>
           <Route path="/" component={PersonaSelector} />
           <Route path="/auth" component={AuthPage} />
-          <Route path="/ecosystem" component={EcosystemMapper} />
+          <Route path="/ecosystem" component={Ecosystem} />
+          <Route path="/ecosystem-mapper" component={EcosystemMapper} />
           <Route path="/philosophy" component={Philosophy} />
           <Route path="/future-works" component={FutureWorks} />
           <Route path="/bluedot-customization" component={BlueDotCustomization} />
