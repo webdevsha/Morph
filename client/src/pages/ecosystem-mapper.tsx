@@ -343,8 +343,8 @@ export default function EcosystemMapper() {
           <Tabs defaultValue="pathways" className="space-y-6">
             <TabsList>
               <TabsTrigger value="pathways">Learning Pathways</TabsTrigger>
-              <TabsTrigger value="network">Network View</TabsTrigger>
               <TabsTrigger value="career">Career Explorer</TabsTrigger>
+              <TabsTrigger value="network">Network View</TabsTrigger>
             </TabsList>
 
             <TabsContent value="pathways">
