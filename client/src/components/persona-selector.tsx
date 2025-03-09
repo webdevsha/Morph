@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { BackgroundAnalyzer } from "@/components/background-analyzer";
 import { CourseImporter } from "@/components/course-importer";
 
 const personas = [
@@ -123,6 +124,51 @@ export function PersonaSelector() {
             ))}
           </div>
         </div>
+
+        {/* Get Custom Learning Pathway Section */}
+        <Card className="p-6 mb-12">
+          <h2 className="text-2xl font-semibold mb-6">Get Custom Learning Pathway 🎯</h2>
+          <div className="max-w-3xl mx-auto">
+            <BackgroundAnalyzer onPersonaSelect={(persona) => {
+              localStorage.setItem('selectedPersona', persona);
+              setLocation('/ecosystem');
+            }} />
+          </div>
+        </Card>
+
+        {/* Career Explorer Section */}
+        <Card className="p-6">
+          <h2 className="text-2xl font-semibold mb-6">Career Explorer 🚀</h2>
+          <div className="text-center mb-6">
+            <p className="text-lg text-muted-foreground">
+              Discover how your unique background can contribute to AI safety initiatives
+            </p>
+          </div>
+          <div className="max-w-3xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-6">
+              <Button 
+                variant="outline" 
+                className="p-8 h-auto flex flex-col items-center text-left"
+                onClick={() => setLocation('/career-mapping')}
+              >
+                <h3 className="text-lg font-semibold mb-2">Skill Mapping</h3>
+                <p className="text-sm text-muted-foreground">
+                  Map your existing skills to AI safety domains and identify potential contribution areas
+                </p>
+              </Button>
+              <Button 
+                variant="outline" 
+                className="p-8 h-auto flex flex-col items-center text-left"
+                onClick={() => setLocation('/career-opportunities')}
+              >
+                <h3 className="text-lg font-semibold mb-2">Opportunities</h3>
+                <p className="text-sm text-muted-foreground">
+                  Explore current opportunities and roles in the AI safety field
+                </p>
+              </Button>
+            </div>
+          </div>
+        </Card>
       </div>
     </div>
   );
