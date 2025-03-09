@@ -20,6 +20,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import type { Pathway } from "@shared/schema";
 import { generateLocalizedResources, type LocalizationContext } from "@/lib/ai-localization";
+import { CareerProfileForm, type CareerProfile } from "@/components/career-profile-form";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 type UserContext = {
   region: string;
@@ -282,10 +284,39 @@ const ConnectorLine = () => (
 export default function EcosystemMapper() {
   const selectedPersona = localStorage.getItem('selectedPersona') || 'learner';
   const [activeNode, setActiveNode] = useState<number | null>(null);
+  const [careerSuggestions, setCareerSuggestions] = useState<any>(null);
+  const [careerError, setCareerError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const { data: pathways, isLoading } = useQuery<Pathway[]>({
     queryKey: ["/api/pathways"],
   });
+
+  const handleCareerProfile = async (profile: CareerProfile) => {
+    try {
+      const response = await fetch('/api/career-suggestions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(profile)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get career suggestions');
+      }
+
+      const data = await response.json();
+      setCareerSuggestions(data.suggestions);
+      setCareerError(null);
+    } catch (error: any) {
+      setCareerError(error.message);
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  };
+
 
   if (isLoading) {
     return (
@@ -313,6 +344,7 @@ export default function EcosystemMapper() {
             <TabsList>
               <TabsTrigger value="pathways">Learning Pathways</TabsTrigger>
               <TabsTrigger value="network">Network View</TabsTrigger>
+              <TabsTrigger value="career">Career Explorer</TabsTrigger>
             </TabsList>
 
             <TabsContent value="pathways">
@@ -347,6 +379,71 @@ export default function EcosystemMapper() {
                     </div>
                   </section>
                 ))}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="career">
+              <div className="space-y-6">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h2 className="text-2xl font-bold">AI Safety Career Explorer</h2>
+                    <p className="text-muted-foreground mt-2">
+                      Discover personalized career paths in AI safety based on your background
+                    </p>
+                  </div>
+                  <CareerProfileForm onProfileSubmit={handleCareerProfile} />
+                </div>
+
+                {careerError && (
+                  <Alert variant="destructive">
+                    <AlertTitle>Error</AlertTitle>
+                    <AlertDescription>{careerError}</AlertDescription>
+                  </Alert>
+                )}
+
+                {careerSuggestions && (
+                  <div className="grid gap-6 md:grid-cols-3">
+                    {careerSuggestions.map((suggestion: any, index: number) => (
+                      <Card key={index} className="p-6">
+                        <div className="flex justify-between items-start mb-4">
+                          <h3 className="text-xl font-semibold">{suggestion.role}</h3>
+                          <Badge variant={suggestion.type === 'full-time' ? 'default' : 'secondary'}>
+                            {suggestion.type}
+                          </Badge>
+                        </div>
+
+                        <div className="space-y-4">
+                          <div>
+                            <h4 className="font-medium mb-2">Why This Path?</h4>
+                            <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                              {suggestion.reasoning.map((reason: string, i: number) => (
+                                <li key={i}>{reason}</li>
+                              ))}
+                            </ul>
+                          </div>
+
+                          <div>
+                            <h4 className="font-medium mb-2">Career Trajectory</h4>
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 rounded-full bg-primary" />
+                                <span className="text-sm">{suggestion.trajectory.startingPoint}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 rounded-full bg-primary/60" />
+                                <span className="text-sm">{suggestion.trajectory.intermediateStep}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 rounded-full bg-primary/30" />
+                                <span className="text-sm">{suggestion.trajectory.targetRole}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
               </div>
             </TabsContent>
 

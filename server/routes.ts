@@ -181,6 +181,74 @@ The response MUST follow this exact JSON format:
     }
   });
 
+  // Career path suggestions endpoint
+  app.post("/api/career-suggestions", async (req, res) => {
+    try {
+      const { currentRole, yearsExperience, background, skills, interests } = req.body;
+
+      const prompt = `As an AI safety career advisor, analyze this professional's background and suggest 3 possible career trajectories in AI safety:
+
+Current Role: ${currentRole}
+Years of Experience: ${yearsExperience}
+Background: ${background}
+Skills: ${skills}
+AI Safety Interests: ${interests}
+
+Please provide career suggestions in this JSON format:
+{
+  "suggestions": [
+    {
+      "role": "string",
+      "type": "full-time|part-time",
+      "reasoning": ["reason1", "reason2", "reason3"],
+      "trajectory": {
+        "startingPoint": "string",
+        "intermediateStep": "string",
+        "targetRole": "string"
+      }
+    }
+  ]
+}
+
+Focus on roles that leverage their current skills and experience. For each suggestion, provide three specific reasons why they would excel in this path based on their background.`;
+
+      const completion = await anthropic.messages.create({
+        max_tokens: 1024,
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        model: 'claude-3-opus-20240229',
+        system: 'You are an expert AI safety career advisor. Focus on practical, actionable suggestions.',
+      });
+
+      // Extract the first content block text
+      const messageContent = completion.content[0].text || '';
+
+      // Extract JSON from the response text
+      const jsonMatch = messageContent.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error('No valid JSON found in response');
+      }
+
+      const suggestions = JSON.parse(jsonMatch[0]);
+
+      // Validate response structure
+      if (!suggestions.suggestions || !Array.isArray(suggestions.suggestions)) {
+        throw new Error('Invalid response format: missing suggestions array');
+      }
+
+      res.json(suggestions);
+    } catch (error: any) {
+      console.error('Career suggestions error:', error);
+      res.status(500).json({
+        error: error.message || 'Failed to generate career suggestions'
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
