@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { BackgroundAnalyzer } from "@/components/background-analyzer";
 import { CourseImporter } from "@/components/course-importer";
 
 const personas = [
@@ -123,18 +122,6 @@ export function PersonaSelector() {
               </Card>
             ))}
           </div>
-        </div>
-
-        {/* Get Personalized Path Section */}
-        <div className="space-y-6">
-          <h2 className="text-2xl font-semibold flex items-center gap-2">
-            <span>Get Custom Path</span>
-            <span className="text-2xl">🎨</span>
-          </h2>
-          <BackgroundAnalyzer onPersonaSelect={(persona) => {
-            localStorage.setItem('selectedPersona', persona);
-            setLocation('/ecosystem');
-          }} />
         </div>
       </div>
     </div>
