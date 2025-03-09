@@ -188,7 +188,7 @@ export function WritingTool() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="mt-4"
+                      className="mt-4 w-full"
                       onClick={() => generateAIFeedback('ideas', { ideas })}
                       disabled={isGenerating}
                     >
@@ -268,6 +268,7 @@ export function WritingTool() {
                         variant="outline"
                         onClick={() => generateAIFeedback('audience', audienceAnalysis)}
                         disabled={isGenerating}
+                        className="w-full"
                       >
                         <Sparkles className="h-4 w-4 mr-2" />
                         Get AI Feedback on Audience Analysis
@@ -335,7 +336,7 @@ export function WritingTool() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="mt-4"
+                      className="mt-4 w-full"
                       onClick={() => generateAIFeedback('headlines', { headlines, selectedIdea })}
                       disabled={isGenerating}
                     >
@@ -397,6 +398,7 @@ export function WritingTool() {
                     variant="outline"
                     onClick={() => generateAIFeedback('story', story)}
                     disabled={isGenerating}
+                    className="w-full"
                   >
                     <Sparkles className="h-4 w-4 mr-2" />
                     Get AI Feedback on Story Structure
@@ -455,6 +457,7 @@ export function WritingTool() {
                       ...outline,
                       points: [...outline.points, ""]
                     })}
+                    className="w-full mt-2"
                   >
                     Add Point
                   </Button>
@@ -478,6 +481,7 @@ export function WritingTool() {
                     variant="outline"
                     onClick={() => generateAIFeedback('outline', outline)}
                     disabled={isGenerating}
+                    className="w-full"
                   >
                     <Sparkles className="h-4 w-4 mr-2" />
                     Get AI Feedback on Outline
