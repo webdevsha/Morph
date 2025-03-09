@@ -31,6 +31,9 @@ export function CourseImporter() {
       return;
     }
 
+    // Clear any existing stored data
+    localStorage.removeItem('importUrl');
+    localStorage.removeItem('userBackground');
     setShowBackgroundDialog(true);
   };
 
@@ -93,7 +96,7 @@ export function CourseImporter() {
             onClick={handleUrlSubmit}
             disabled={isProcessing}
           >
-            Import & Customize
+            Import Course Unit
           </Button>
         </div>
       </Card>
