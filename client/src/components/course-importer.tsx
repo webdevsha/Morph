@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { queryClient } from "@/lib/queryClient";
 
 export function CourseImporter() {
   const [url, setUrl] = useState("");
@@ -34,6 +35,7 @@ export function CourseImporter() {
     // Clear any existing stored data
     localStorage.removeItem('importUrl');
     localStorage.removeItem('userBackground');
+    queryClient.clear();
     setShowBackgroundDialog(true);
   };
 
@@ -101,7 +103,15 @@ export function CourseImporter() {
         </div>
       </Card>
 
-      <Dialog open={showBackgroundDialog} onOpenChange={setShowBackgroundDialog}>
+      <Dialog 
+        open={showBackgroundDialog} 
+        onOpenChange={(open) => {
+          if (!open) {
+            setBackground("");
+          }
+          setShowBackgroundDialog(open);
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Customize Your Learning Experience</DialogTitle>
