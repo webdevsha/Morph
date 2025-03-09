@@ -1,6 +1,7 @@
 import { useAuth } from "@/hooks/use-auth";
 import { Loader2 } from "lucide-react";
 import { Redirect, Route } from "wouter";
+import { useEffect, useState } from "react";
 
 export function ProtectedRoute({
   path,
@@ -10,6 +11,14 @@ export function ProtectedRoute({
   component: () => React.JSX.Element;
 }) {
   const { user, isLoading } = useAuth();
+  const [visitCount, setVisitCount] = useState(0);
+
+  useEffect(() => {
+    // Increment visit count in localStorage
+    const count = parseInt(localStorage.getItem('visitCount') || '0');
+    localStorage.setItem('visitCount', (count + 1).toString());
+    setVisitCount(count + 1);
+  }, []);
 
   if (isLoading) {
     return (
@@ -21,7 +30,8 @@ export function ProtectedRoute({
     );
   }
 
-  if (!user) {
+  // Allow initial visits without auth, prompt login after 2 visits
+  if (!user && visitCount > 2) {
     return (
       <Route path={path}>
         <Redirect to="/auth" />
@@ -29,5 +39,5 @@ export function ProtectedRoute({
     );
   }
 
-  return <Component />
+  return <Component />;
 }

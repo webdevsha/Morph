@@ -10,17 +10,21 @@ import Tools from "@/pages/tools";
 import NotFound from "@/pages/not-found";
 import { ProtectedRoute } from "./lib/protected-route";
 import { PersonaSelector } from "@/components/persona-selector";
+import { NavBar } from "@/components/nav-bar";
 
 function Router() {
   return (
-    <Switch>
-      <Route path="/" component={PersonaSelector} />
-      <Route path="/auth" component={AuthPage} />
-      <ProtectedRoute path="/dashboard" component={HomePage} />
-      <ProtectedRoute path="/ecosystem" component={EcosystemMapper} />
-      <ProtectedRoute path="/tools" component={Tools} />
-      <Route component={NotFound} />
-    </Switch>
+    <div className="min-h-screen flex flex-col">
+      <NavBar /> {/* Added NavBar component */}
+      <Switch>
+        <Route path="/" component={PersonaSelector} />
+        <Route path="/auth" component={AuthPage} />
+        <ProtectedRoute path="/dashboard" component={HomePage} />
+        <ProtectedRoute path="/ecosystem" component={EcosystemMapper} />
+        <ProtectedRoute path="/tools" component={Tools} />
+        <Route component={NotFound} />
+      </Switch>
+    </div>
   );
 }
 
