@@ -19,12 +19,27 @@ export const pathways = pgTable("pathways", {
   difficulty: text("difficulty").notNull(),
   duration: text("duration").notNull(),
   category: text("category").notNull(),
+  persona: text("persona"), // Which persona this pathway is designed for
   steps: jsonb("steps").notNull(),
   dependencies: jsonb("dependencies"), // IDs of pathways that must be completed first
   skills_required: text("skills_required").array(),
   skills_gained: text("skills_gained").array(),
   resources: jsonb("resources"), // Array of linked resources
+  related_concepts: jsonb("related_concepts"), // Related topics and concepts
+  ecosystem_links: jsonb("ecosystem_links"), // External ecosystem connections
   completion_criteria: jsonb("completion_criteria")
+});
+
+export const resources = pgTable("resources", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  type: text("type").notNull(), // article, video, course, etc.
+  url: text("url").notNull(),
+  description: text("description"),
+  provider: text("provider"), // e.g., "AI Safety Fundamentals", "BlueDot"
+  tags: text("tags").array(),
+  difficulty: text("difficulty"),
+  pathway_id: integer("pathway_id").references(() => pathways.id)
 });
 
 export const tools = pgTable("tools", {
@@ -35,17 +50,7 @@ export const tools = pgTable("tools", {
   template: jsonb("template")
 });
 
-export const resources = pgTable("resources", {
-  id: serial("id").primaryKey(),
-  title: text("title").notNull(),
-  type: text("type").notNull(), // article, video, course, etc.
-  url: text("url").notNull(),
-  description: text("description"),
-  tags: text("tags").array(),
-  difficulty: text("difficulty"),
-  pathway_id: integer("pathway_id").references(() => pathways.id)
-});
-
+// Schema types
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
@@ -63,16 +68,18 @@ export type Pathway = typeof pathways.$inferSelect;
 export type Tool = typeof tools.$inferSelect;
 export type Resource = typeof resources.$inferSelect;
 
-// Custom types for the visualization
+// Visualization types
 export type PathwayNode = {
   id: string;
-  type: 'pathway' | 'resource' | 'skill';
+  type: 'pathway' | 'resource' | 'skill' | 'concept';
   data: {
     title: string;
     description?: string;
     difficulty?: string;
     duration?: string;
     category?: string;
+    provider?: string;
+    url?: string;
     completion?: number;
   };
   position: { x: number; y: number };
@@ -82,6 +89,7 @@ export type PathwayEdge = {
   id: string;
   source: string;
   target: string;
-  type: 'dependency' | 'resource' | 'skill';
+  type: 'dependency' | 'resource' | 'skill' | 'concept';
+  label?: string;
   animated?: boolean;
 };

@@ -23,62 +23,102 @@ export class MemStorage implements IStorage {
       checkPeriod: 86400000,
     });
 
-    // Initialize with some sample data
+    // Initialize with governance course sample data
     this.initializeSampleData();
   }
 
   private initializeSampleData() {
-    // Add sample pathways
-    const fundamentals: Pathway = {
+    // Governance Track Pathways (based on AI Safety Fundamentals)
+    const introToGovernance: Pathway = {
       id: 1,
-      title: "AI Safety Fundamentals",
-      description: "Core concepts and principles of AI safety",
+      title: "Introduction to AI Governance",
+      description: "Understanding the landscape of AI governance and policy",
       difficulty: "beginner",
-      duration: "4 weeks",
-      category: "foundations",
+      duration: "2 weeks",
+      category: "governance",
+      persona: "policymaker",
       steps: [
-        { title: "Introduction to AI Safety", description: "Basic concepts and importance" },
-        { title: "Risk Assessment", description: "Identifying and evaluating AI risks" },
-        { title: "Safety Frameworks", description: "Current approaches to AI safety" }
+        { title: "AI Governance Landscape", description: "Overview of key stakeholders and frameworks" },
+        { title: "Current Challenges", description: "Major challenges in AI governance" }
       ],
       dependencies: [],
       skills_required: [],
-      skills_gained: ["risk-assessment", "safety-principles"],
+      skills_gained: ["governance-basics", "policy-frameworks"],
       resources: [
-        { title: "AI Safety Basics", type: "article", url: "https://example.com/basics", pathway_id: 1 }
+        {
+          title: "AI Governance: A Research Agenda",
+          type: "paper",
+          url: "https://example.com/governance-agenda",
+          provider: "AI Safety Fundamentals"
+        }
       ],
-      completion_criteria: { 
-        min_exercises: 3,
-        final_assessment: true
-      }
-    };
-
-    const technical: Pathway = {
-      id: 2,
-      title: "Technical Implementation",
-      description: "Hands-on implementation of AI safety measures",
-      difficulty: "intermediate",
-      duration: "6 weeks",
-      category: "technical",
-      steps: [
-        { title: "Safety Testing Methods", description: "Practical testing approaches" },
-        { title: "Monitoring Systems", description: "Building monitoring solutions" }
+      related_concepts: [
+        { id: "regulation", title: "Regulation Approaches" },
+        { id: "ethics", title: "AI Ethics" }
       ],
-      dependencies: [1], // Requires Fundamentals
-      skills_required: ["safety-principles"],
-      skills_gained: ["safety-testing", "monitoring"],
-      resources: [
-        { title: "Testing Guide", type: "tutorial", url: "https://example.com/testing", pathway_id: 2 }
+      ecosystem_links: [
+        {
+          title: "Global Partnership on AI",
+          url: "https://gpai.ai",
+          type: "organization"
+        },
+        {
+          title: "IEEE AI Standards",
+          url: "https://standards.ieee.org",
+          type: "standards"
+        }
       ],
       completion_criteria: {
-        project_submission: true
+        required_readings: true,
+        assessment: true
       }
     };
 
-    this.pathways.set(1, fundamentals);
-    this.pathways.set(2, technical);
+    const policyFrameworks: Pathway = {
+      id: 2,
+      title: "AI Policy Frameworks",
+      description: "Deep dive into existing and proposed AI policy frameworks",
+      difficulty: "intermediate",
+      duration: "3 weeks",
+      category: "governance",
+      persona: "policymaker",
+      steps: [
+        { title: "International Frameworks", description: "Global AI governance initiatives" },
+        { title: "National Policies", description: "Country-specific AI strategies" }
+      ],
+      dependencies: [1],
+      skills_required: ["governance-basics"],
+      skills_gained: ["policy-analysis", "framework-development"],
+      resources: [
+        {
+          title: "EU AI Act Overview",
+          type: "analysis",
+          url: "https://example.com/eu-ai-act",
+          provider: "AI Safety Fundamentals"
+        }
+      ],
+      related_concepts: [
+        { id: "compliance", title: "Regulatory Compliance" },
+        { id: "impact", title: "Impact Assessment" }
+      ],
+      ecosystem_links: [
+        {
+          title: "OECD AI Policy Observatory",
+          url: "https://oecd.ai",
+          type: "resource"
+        }
+      ],
+      completion_criteria: {
+        case_study: true,
+        policy_brief: true
+      }
+    };
+
+    this.pathways.set(1, introToGovernance);
+    this.pathways.set(2, policyFrameworks);
   }
 
+  // Storage interface methods
   async getUser(id: number): Promise<User | undefined> {
     return this.users.get(id);
   }
@@ -91,7 +131,7 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentId++;
-    const user: User = { ...insertUser, id };
+    const user: User = { ...insertUser, id, progress: {}, skills: [] };
     this.users.set(id, user);
     return user;
   }
@@ -105,8 +145,12 @@ export class MemStorage implements IStorage {
     return updatedUser;
   }
 
-  async getPathways(): Promise<Pathway[]> {
-    return Array.from(this.pathways.values());
+  async getPathways(persona?: string): Promise<Pathway[]> {
+    const pathways = Array.from(this.pathways.values());
+    if (persona) {
+      return pathways.filter(p => p.persona === persona);
+    }
+    return pathways;
   }
 
   async getPathwayById(id: number): Promise<Pathway | undefined> {
