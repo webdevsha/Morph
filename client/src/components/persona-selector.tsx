@@ -50,7 +50,7 @@ export function PersonaSelector() {
 
   const handlePersonaSelect = (persona: typeof personas[0]) => {
     localStorage.setItem('selectedPersona', persona.id);
-    setLocation('/ecosystem');
+    setLocation(`/pathways/${persona.id}`);
   };
 
   return (
