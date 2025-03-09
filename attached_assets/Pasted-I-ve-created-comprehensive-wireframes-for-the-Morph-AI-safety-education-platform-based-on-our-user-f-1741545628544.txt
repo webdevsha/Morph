@@ -1,0 +1,30 @@
+I've created comprehensive wireframes for the Morph AI safety education platform based on our user flow diagram; Morph AI Safety Education platform uses Qwen API/ Deepseek API. These wireframes cover key screens that reflect the platform's core features and user journeys:
+1. Welcome/ Login Screen
+Persona selection (Learner, Parent, Policymaker) - but make it as a question (eg “Why do we need AI safety?” or “I am not sure policymaker could benefit from AI safety.” or “Would AI safe for my family?”)
+Login functionality (but later when they’ve been using for 3 pages, then you prompt registration or when they wanna use more exclusive pages eg Ecosystem Mapper or Tools - they can view and test but limited)
+Brand identity placement - Morph uses pastel color from Spongebob’s Jellyfish
+Put a Statistics or News on how AI Safety Public Education is Important
+Shortcut: they can paste BlueDot Course URL and Morph AI can read and adjust for the ecosystem tools we have
+2. Non-UK/US Learner Dashboard
+Region and language toggles for localization - language toggles to be included later
+Culturally adapted content preview according to the region they select
+Interactive simulation component
+Progress tracking and learning path sidebar -> that will bring them to Ecosystem Mapper
+Peer-mentor matching - based on LinkedIn tagged with BlueDot Course Attendance (peer could mean alumni from current batch, to balance the busy AI safety experts)
+3. Ecosystem Mapper (Roadmap.sh style)
+Timeline/ Topic view toggle 
+Visual progression path (Prompted with “I am currently an X” and the pathway would show possible pathways they can do full time or part time)
+Detailed view of the a selected Career stage
+Tool integration (Project Assistant)
+Skill progression tracking
+Resources library
+4. Ecosystem Tool eg Policy Drafter tool or Project Assistant or Writing Assistant
+These tools are in Ecosystem to support the learner wholly - they are assessed by not lengthy exams but for each Course Unit, they could be asked to apply into various types of pedagogical instruments: these are Mini-Assessments and Nudges
+Template-based policy creation interface or Projects and Writings according to BlueDot curriculum
+Fill-in-the-blank form fields for these frameworks
+Template library sidebar (from the past alumnus)
+Save and export functionality
+5. Dashboard Overview Screen
+Ecosystem (could be quirky but still minimalist) interface to see where we are in the AI safety journey
+Skills as strengths overview (based on their current and past skills & newly gained skills from the BlueDot their learning)
+Nudges to apply their new skills 
