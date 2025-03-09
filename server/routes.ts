@@ -330,10 +330,11 @@ Response format must be JSON:
 3. Future of AI and Safety
 
 For each unit, provide:
-- A customized title that relates to their background
-- A description that connects the topic to their field
-- Specific examples from their domain
+- A customized title that relates to their background and emphasizes safety/risks
+- A description that connects the topic to their field, highlighting potential risks and safety considerations
+- Specific examples from their domain showing both benefits and risks
 - Learning outcomes relevant to their expertise
+- 1-2 relevant resources (papers, articles, or tools) specifically chosen for their background
 
 Response format must be JSON:
 {
@@ -342,7 +343,15 @@ Response format must be JSON:
       "title": "string",
       "description": "string",
       "examples": ["string"],
-      "outcomes": ["string"]
+      "outcomes": ["string"],
+      "resources": [
+        {
+          "title": "string",
+          "url": "string",
+          "type": "paper|article|tool",
+          "description": "string"
+        }
+      ]
     }
   ]
 }`;
@@ -356,7 +365,7 @@ Response format must be JSON:
           }
         ],
         model: 'claude-3-opus-20240229',
-        system: 'You are an AI education expert specializing in personalizing learning paths.',
+        system: 'You are an AI education expert specializing in personalizing learning paths. Focus on safety implications and risks specific to the learner\'s field.',
       });
 
       // Extract the first content block text

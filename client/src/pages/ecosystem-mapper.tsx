@@ -29,6 +29,7 @@ type CourseUnit = {
   description: string;
   examples: string[];
   outcomes: string[];
+  resources?: Array<{ title: string; url: string; type: string }>;
 };
 
 const LocalizationForm = ({ onSave, initialContext }: {
@@ -587,6 +588,34 @@ export default function EcosystemMapper() {
                                   </ul>
                                 </div>
                               </div>
+
+                              {unit.resources && unit.resources.length > 0 && (
+                                <div className="mt-4 space-y-2">
+                                  <h5 className="font-medium flex items-center gap-2">
+                                    <span>Recommended Resources</span>
+                                    <span>📚</span>
+                                  </h5>
+                                  <div className="grid gap-2">
+                                    {unit.resources.map((resource, i) => (
+                                      <a
+                                        key={i}
+                                        href={resource.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="block p-3 rounded-lg border bg-background hover:bg-accent/5 transition-colors"
+                                      >
+                                        <div className="flex justify-between items-start">
+                                          <span className="font-medium">{resource.title}</span>
+                                          <Badge variant="outline">{resource.type}</Badge>
+                                        </div>
+                                        <p className="text-sm text-muted-foreground mt-1">
+                                          {resource.description}
+                                        </p>
+                                      </a>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </Card>
