@@ -336,7 +336,7 @@ For each unit, provide:
 - Learning outcomes relevant to their expertise
 - 1-2 relevant resources (papers, articles, or tools) specifically chosen for their background
 
-Response format must be JSON:
+Response format must be JSON with no trailing commas:
 {
   "units": [
     {
@@ -365,26 +365,35 @@ Response format must be JSON:
           }
         ],
         model: 'claude-3-opus-20240229',
-        system: 'You are an AI education expert specializing in personalizing learning paths. Focus on safety implications and risks specific to the learner\'s field.',
+        system: 'You are an AI education expert specializing in personalizing learning paths. Focus on safety implications and risks specific to the learner\'s field. Always provide valid JSON responses without trailing commas.',
       });
 
-      // Extract the first content block text
+      // Extract the first content block text and clean it
       const messageContent = completion.content[0].text || '';
 
-      // Extract JSON from the response text
+      // Find and clean JSON content
       const jsonMatch = messageContent.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
         throw new Error('No valid JSON found in response');
       }
 
-      const customizedContent = JSON.parse(jsonMatch[0]);
+      let jsonString = jsonMatch[0];
+      // Remove any trailing commas before arrays close
+      jsonString = jsonString.replace(/,(\s*[\]}])/g, '$1');
 
-      // Validate response structure
-      if (!customizedContent.units || !Array.isArray(customizedContent.units)) {
-        throw new Error('Invalid response format');
+      try {
+        const customizedContent = JSON.parse(jsonString);
+
+        // Validate response structure
+        if (!customizedContent.units || !Array.isArray(customizedContent.units)) {
+          throw new Error('Invalid response format: missing units array');
+        }
+
+        res.json(customizedContent);
+      } catch (parseError) {
+        console.error('JSON parse error:', parseError, 'Raw JSON:', jsonString);
+        throw new Error('Failed to parse customized content');
       }
-
-      res.json(customizedContent);
     } catch (error: any) {
       console.error('Course customization error:', error);
       res.status(500).json({
