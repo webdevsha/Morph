@@ -261,7 +261,7 @@ For each career path:
     }
   });
 
-  // Add this new endpoint after the existing ones
+  // Add this new endpoint before the existing ones
   app.post("/api/analyze-background", async (req, res) => {
     try {
       const { background } = req.body;
@@ -379,6 +379,69 @@ Response must be valid JSON with this exact format:
       });
     }
   });
+
+  // Add this new endpoint before the httpServer creation
+  app.post("/api/customize-unit", async (req, res) => {
+    try {
+      const { url, background } = req.body;
+
+      const prompt = `Given this policy toolkit unit from AI Safety Fundamentals:
+
+Title: The AI Policy Toolkit
+Description: In this unit, we'll discuss the goals governments might have and the levers they can use to achieve them. We examine policy frameworks, policy levers, and tools governments use to steer AI development.
+
+And this learner background: "${background}"
+
+Create a customized learning experience with:
+1. A role-play exercise where they apply concepts in their professional context
+2. Two recent, relevant news articles that enhance understanding
+3. Key reflection questions
+
+Response format:
+{
+  "customizedUnit": {
+    "title": "string",
+    "description": "string",
+    "rolePlay": {
+      "scenario": "string",
+      "objectives": ["string"],
+      "setup": "string",
+      "keyQuestions": ["string"]
+    },
+    "relevantNews": [
+      {
+        "title": "string",
+        "url": "string",
+        "relevance": "string"
+      }
+    ]
+  }
+}`;
+
+      const completion = await anthropic.messages.create({
+        max_tokens: 1024,
+        messages: [{ role: 'user', content: prompt }],
+        model: 'claude-3-opus-20240229',
+        system: 'You are an AI safety education expert specializing in creating engaging, practical learning experiences.',
+      });
+
+      const messageContent = completion.content[0].text || '';
+      const jsonMatch = messageContent.match(/\{[\s\S]*\}/);
+
+      if (!jsonMatch) {
+        throw new Error('No valid JSON found in response');
+      }
+
+      const customizedContent = JSON.parse(jsonMatch[0]);
+      res.json(customizedContent);
+    } catch (error: any) {
+      console.error('Unit customization error:', error);
+      res.status(500).json({
+        error: error.message || 'Failed to customize course unit'
+      });
+    }
+  });
+
 
   const httpServer = createServer(app);
   return httpServer;

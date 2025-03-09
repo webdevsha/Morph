@@ -23,6 +23,7 @@ import { generateLocalizedResources, type LocalizationContext } from "@/lib/ai-l
 import { CareerProfileForm, type CareerProfile } from "@/components/career-profile-form";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useLocation } from "wouter";
+import { CourseImporter } from "@/components/course-importer";
 
 type CourseUnit = {
   title: string;
@@ -33,6 +34,22 @@ type CourseUnit = {
     url: string;
     type: string;
   };
+};
+
+type CustomizedUnit = {
+  title: string;
+  description: string;
+  rolePlay: {
+    scenario: string;
+    objectives: string[];
+    setup: string;
+    keyQuestions: string[];
+  };
+  relevantNews: Array<{
+    title: string;
+    url: string;
+    relevance: string;
+  }>;
 };
 
 const LocalizationForm = ({ onSave, initialContext }: {
@@ -297,6 +314,7 @@ export default function EcosystemMapper() {
   const [showRegistration] = useState(true);
   const [courseUnits, setCourseUnits] = useState<CourseUnit[]>([]);
   const [isLoadingUnits, setIsLoadingUnits] = useState(false);
+  const [customizedUnit, setCustomizedUnit] = useState<CustomizedUnit | null>(null);
 
   // Get user context
   const selectedPersona = localStorage.getItem('selectedPersona') || 'learner';
@@ -600,6 +618,80 @@ export default function EcosystemMapper() {
                         </Card>
                       ))}
                     </div>
+                  </div>
+                )}
+
+                {/* BlueDot Course Import */}
+                <div className="space-y-6 mt-12 pt-12 border-t">
+                  <h2 className="text-2xl font-semibold">Import from BlueDot 🔄</h2>
+                  <CourseImporter onCustomization={(data) => setCustomizedUnit(data.customizedUnit)} />
+                </div>
+
+                {/* Imported Course Unit */}
+                {customizedUnit && (
+                  <div className="space-y-6 mt-12 pt-12 border-t">
+                    <h2 className="text-2xl font-semibold">
+                      Your Customized Unit 🎯
+                    </h2>
+                    <Card className="p-6">
+                      <div className="space-y-6">
+                        <div>
+                          <h3 className="text-xl font-semibold mb-2">{customizedUnit.title}</h3>
+                          <p className="text-muted-foreground">{customizedUnit.description}</p>
+                        </div>
+
+                        <div className="space-y-4">
+                          <h4 className="text-lg font-semibold">Role-Play Exercise</h4>
+                          <Card className="p-4 bg-primary/5">
+                            <div className="space-y-4">
+                              <p className="font-medium">Scenario:</p>
+                              <p className="text-muted-foreground">{customizedUnit.rolePlay.scenario}</p>
+
+                              <div>
+                                <p className="font-medium mb-2">Objectives:</p>
+                                <ul className="list-disc list-inside space-y-1">
+                                  {customizedUnit.rolePlay.objectives.map((obj, i) => (
+                                    <li key={i} className="text-muted-foreground">{obj}</li>
+                                  ))}
+                                </ul>
+                              </div>
+
+                              <div>
+                                <p className="font-medium mb-2">Setup:</p>
+                                <p className="text-muted-foreground">{customizedUnit.rolePlay.setup}</p>
+                              </div>
+
+                              <div>
+                                <p className="font-medium mb-2">Key Questions:</p>
+                                <ul className="list-disc list-inside space-y-1">
+                                  {customizedUnit.rolePlay.keyQuestions.map((q, i) => (
+                                    <li key={i} className="text-muted-foreground">{q}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            </div>
+                          </Card>
+                        </div>
+
+                        <div className="space-y-4">
+                          <h4 className="text-lg font-semibold">Relevant News & Updates</h4>
+                          <div className="grid gap-4">
+                            {customizedUnit.relevantNews.map((news, i) => (
+                              <a
+                                key={i}
+                                href={news.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block p-4 rounded-lg border hover:bg-accent/5 transition-colors"
+                              >
+                                <h5 className="font-medium mb-2">{news.title}</h5>
+                                <p className="text-sm text-muted-foreground">{news.relevance}</p>
+                              </a>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
                   </div>
                 )}
               </div>
