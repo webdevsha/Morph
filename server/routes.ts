@@ -205,12 +205,24 @@ Please provide career suggestions in this JSON format:
         "startingPoint": "string",
         "intermediateStep": "string",
         "targetRole": "string"
-      }
+      },
+      "resources": [
+        {
+          "name": "string",
+          "url": "string",
+          "type": "remote|regional",
+          "description": "string"
+        }
+      ]
     }
   ]
 }
 
-Focus on roles that leverage their current skills and experience. For each suggestion, provide three specific reasons why they would excel in this path based on their background.`;
+For each career path:
+1. Focus on roles that leverage their current skills and experience
+2. Provide three specific reasons why they would excel in this path
+3. Include 2 relevant resources (mix of remote and regional) that can help them get started
+4. Ensure resources are specific and actionable (e.g., courses, communities, organizations)`;
 
       const completion = await anthropic.messages.create({
         max_tokens: 1024,

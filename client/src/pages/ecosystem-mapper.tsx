@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ExternalLink, BookOpen, Users, GraduationCap, Globe, Loader2 } from "lucide-react";
+import { ExternalLink, BookOpen, Users, GraduationCap, Globe, Loader2, MessageSquare } from "lucide-react";
 import { useState, useEffect } from "react";
 import {
   Dialog,
@@ -402,46 +402,95 @@ export default function EcosystemMapper() {
                 )}
 
                 {careerSuggestions && (
-                  <div className="grid gap-6 md:grid-cols-3">
-                    {careerSuggestions.map((suggestion: any, index: number) => (
-                      <Card key={index} className="p-6">
-                        <div className="flex justify-between items-start mb-4">
-                          <h3 className="text-xl font-semibold">{suggestion.role}</h3>
-                          <Badge variant={suggestion.type === 'full-time' ? 'default' : 'secondary'}>
-                            {suggestion.type}
-                          </Badge>
-                        </div>
-
-                        <div className="space-y-4">
-                          <div>
-                            <h4 className="font-medium mb-2">Why This Path?</h4>
-                            <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                              {suggestion.reasoning.map((reason: string, i: number) => (
-                                <li key={i}>{reason}</li>
-                              ))}
-                            </ul>
+                  <div className="space-y-6">
+                    <div className="grid gap-6 md:grid-cols-3">
+                      {careerSuggestions.map((suggestion: any, index: number) => (
+                        <Card key={index} className="p-6">
+                          <div className="flex justify-between items-start mb-4">
+                            <h3 className="text-xl font-semibold">{suggestion.role}</h3>
+                            <Badge variant={suggestion.type === 'full-time' ? 'default' : 'secondary'}>
+                              {suggestion.type}
+                            </Badge>
                           </div>
 
-                          <div>
-                            <h4 className="font-medium mb-2">Career Trajectory</h4>
-                            <div className="space-y-2">
-                              <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full bg-primary" />
-                                <span className="text-sm">{suggestion.trajectory.startingPoint}</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full bg-primary/60" />
-                                <span className="text-sm">{suggestion.trajectory.intermediateStep}</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full bg-primary/30" />
-                                <span className="text-sm">{suggestion.trajectory.targetRole}</span>
+                          <div className="space-y-4">
+                            <div>
+                              <h4 className="font-medium mb-2">Why This Path?</h4>
+                              <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                                {suggestion.reasoning.map((reason: string, i: number) => (
+                                  <li key={i}>{reason}</li>
+                                ))}
+                              </ul>
+                            </div>
+
+                            <div>
+                              <h4 className="font-medium mb-2">Career Trajectory</h4>
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-3 h-3 rounded-full bg-primary" />
+                                  <span className="text-sm">{suggestion.trajectory.startingPoint}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-3 h-3 rounded-full bg-primary/60" />
+                                  <span className="text-sm">{suggestion.trajectory.intermediateStep}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-3 h-3 rounded-full bg-primary/30" />
+                                  <span className="text-sm">{suggestion.trajectory.targetRole}</span>
+                                </div>
                               </div>
                             </div>
+
+                            {suggestion.resources && (
+                              <div>
+                                <h4 className="font-medium mb-2">Recommended Resources</h4>
+                                <div className="space-y-2">
+                                  {suggestion.resources.map((resource: any, i: number) => (
+                                    <a
+                                      key={i}
+                                      href={resource.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="block p-3 rounded-lg border bg-background hover:bg-accent/5 transition-colors"
+                                    >
+                                      <div className="flex justify-between items-start mb-1">
+                                        <span className="font-medium">{resource.name}</span>
+                                        <Badge variant="outline">{resource.type}</Badge>
+                                      </div>
+                                      <p className="text-sm text-muted-foreground">
+                                        {resource.description}
+                                      </p>
+                                    </a>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
                           </div>
+                        </Card>
+                      ))}
+                    </div>
+
+                    <Card className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="text-lg font-semibold">Need More Guidance?</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Join our Slack community to connect with mentors and peers in AI safety
+                          </p>
                         </div>
-                      </Card>
-                    ))}
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          className="gap-2"
+                          asChild
+                        >
+                          <a href="https://join.slack.com/t/ai-safety-community/shared_invite/your-invite-link" target="_blank" rel="noopener noreferrer">
+                            <MessageSquare className="h-4 w-4" />
+                            Connect on Slack
+                          </a>
+                        </Button>
+                      </div>
+                    </Card>
                   </div>
                 )}
               </div>
