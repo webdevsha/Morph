@@ -4,12 +4,10 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
   HomeIcon, 
-  BookOpen, 
   Wrench, 
   LogOut,
   Map,
-  HeartHandshake,
-  Network
+  HeartHandshake
 } from "lucide-react";
 
 export function DashboardSidebar() {
@@ -29,13 +27,6 @@ export function DashboardSidebar() {
               </Button>
             </Link>
 
-            <Link href="/ecosystem">
-              <Button variant="ghost" className="w-full justify-start">
-                <Network className="mr-2 h-4 w-4" />
-                Global Ecosystem
-              </Button>
-            </Link>
-
             <Link href="/ecosystem-mapper">
               <Button variant="ghost" className="w-full justify-start">
                 <Map className="mr-2 h-4 w-4" />
@@ -47,13 +38,6 @@ export function DashboardSidebar() {
               <Button variant="ghost" className="w-full justify-start">
                 <Wrench className="mr-2 h-4 w-4" />
                 Tools
-              </Button>
-            </Link>
-
-            <Link href="/philosophy">
-              <Button variant="ghost" className="w-full justify-start">
-                <HeartHandshake className="mr-2 h-4 w-4" />
-                Our Philosophy
               </Button>
             </Link>
           </nav>

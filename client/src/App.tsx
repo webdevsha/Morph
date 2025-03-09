@@ -17,6 +17,8 @@ import Philosophy from "@/pages/philosophy";
 import FutureWorks from "@/pages/future-works";
 import BlueDotCustomization from "@/pages/bluedot-customization";
 import PolicymakerPathway from "@/pages/pathways/policymaker";
+import RegionalPathway from "@/pages/pathways/regional";
+import FamilyPathway from "@/pages/pathways/family";
 
 function Router() {
   return (
@@ -33,6 +35,8 @@ function Router() {
           <Route path="/future-works" component={FutureWorks} />
           <Route path="/bluedot-customization" component={BlueDotCustomization} />
           <Route path="/pathways/policymaker" component={PolicymakerPathway} />
+          <Route path="/pathways/regional" component={RegionalPathway} />
+          <Route path="/pathways/family" component={FamilyPathway} />
           <ProtectedRoute path="/dashboard" component={HomePage} />
           <Route component={NotFound} />
         </Switch>
