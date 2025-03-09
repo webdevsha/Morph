@@ -9,12 +9,14 @@ import EcosystemMapper from "@/pages/ecosystem-mapper";
 import Tools from "@/pages/tools";
 import NotFound from "@/pages/not-found";
 import { ProtectedRoute } from "./lib/protected-route";
+import { PersonaSelector } from "@/components/persona-selector";
 
 function Router() {
   return (
     <Switch>
+      <Route path="/" component={PersonaSelector} />
       <Route path="/auth" component={AuthPage} />
-      <ProtectedRoute path="/" component={HomePage} />
+      <ProtectedRoute path="/dashboard" component={HomePage} />
       <ProtectedRoute path="/ecosystem" component={EcosystemMapper} />
       <ProtectedRoute path="/tools" component={Tools} />
       <Route component={NotFound} />
