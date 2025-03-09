@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ExternalLink, BookOpen, Users, GraduationCap, Globe, Loader2, MessageSquare, AlertCircle } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -23,7 +23,6 @@ import { generateLocalizedResources, type LocalizationContext } from "@/lib/ai-l
 import { CareerProfileForm, type CareerProfile } from "@/components/career-profile-form";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useLocation } from "wouter";
-import React from 'react';
 
 type UserContext = {
   region: string;
@@ -144,13 +143,6 @@ const EcosystemNode = ({
   const [isGenerating, setIsGenerating] = useState(false);
   const [localizedContent, setLocalizedContent] = useState<any>(null);
   const { toast } = useToast();
-
-  useEffect(() => {
-    const savedContext = localStorage.getItem('userContext');
-    if (savedContext) {
-      setUserContext(JSON.parse(savedContext));
-    }
-  }, []);
 
   const handleLocalization = async (context: LocalizationContext) => {
     setIsGenerating(true);
@@ -285,19 +277,23 @@ const ConnectorLine = () => (
 
 export default function EcosystemMapper() {
   const [, setLocation] = useLocation();
-  const selectedPersona = localStorage.getItem('selectedPersona') || 'learner';
-  const userBackground = localStorage.getItem('userBackground');
+  const { toast } = useToast();
+
+  // State management
   const [activeNode, setActiveNode] = useState<number | null>(null);
   const [careerSuggestions, setCareerSuggestions] = useState<any>(null);
   const [careerError, setCareerError] = useState<string | null>(null);
-  const { toast } = useToast();
+  const [showRegistration] = useState(true);
 
+  // Get user context
+  const selectedPersona = localStorage.getItem('selectedPersona') || 'learner';
+  const userBackground = localStorage.getItem('userBackground');
+  const isTechnical = selectedPersona === 'technical';
+
+  // Fetch pathways
   const { data: pathways, isLoading } = useQuery<Pathway[]>({
     queryKey: ["/api/pathways"],
   });
-
-  // Registration prompt
-  const [showRegistration, setShowRegistration] = useState(true);
 
   const handleCareerProfile = async (profile: CareerProfile) => {
     try {
@@ -324,10 +320,6 @@ export default function EcosystemMapper() {
     }
   };
 
-  const navigateTo = (path: string) => {
-    setLocation(path);
-  }
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -336,58 +328,43 @@ export default function EcosystemMapper() {
     );
   }
 
-  // Update basePathways generation to include AI Safety Fundamentals content
-  const basePathways = React.useMemo(() => {
-    const isUser = userBackground;
-    const isFirstTime = !localStorage.getItem('pathwaysGenerated');
-
-    if (!pathways || !isUser) return pathways?.filter(p => p.persona === selectedPersona) || [];
-
-    // Check if user has technical background from stored persona
-    const isTechnical = localStorage.getItem('selectedPersona') === 'technical';
-    const baseUrl = isTechnical 
-      ? 'https://course.aisafetyfundamentals.com/home/alignment'
-      : 'https://course.aisafetyfundamentals.com/home/governance';
-
-    const customPathways = [
-      {
-        id: 1,
-        title: isTechnical ? "AI Alignment Fundamentals" : "AI Governance Fundamentals",
-        description: `Tailored introduction to ${isTechnical ? 'technical AI alignment' : 'AI governance'} concepts, adapted for your ${userBackground} background.`,
-        type: "pathway",
-        persona: selectedPersona,
-        ecosystem_links: [
-          {
-            title: "AI Safety Fundamentals Course",
-            url: baseUrl,
-            type: "resource"
-          }
-        ],
-        resources: [
-          {
-            title: isTechnical ? "Technical Research Papers" : "Governance Framework",
-            provider: "AI Safety Fundamentals",
-            type: "Learning Materials",
-            url: `${baseUrl}/resources`
-          },
-          {
-            title: "Weekly Discussions",
-            provider: "AI Safety Fundamentals",
-            type: "Interactive Sessions",
-            url: `${baseUrl}/discussions`
-          }
-        ]
-      }
-    ];
-
-    if (isFirstTime) {
-      localStorage.setItem('pathwaysGenerated', 'true');
-      return customPathways;
+  // Generate customized pathways
+  const basePathways = [
+    {
+      id: 1,
+      title: isTechnical ? "AI Alignment Fundamentals" : "AI Governance Fundamentals",
+      description: `Tailored introduction to ${isTechnical ? 'technical AI alignment' : 'AI governance'} concepts, adapted for your ${userBackground} background.`,
+      type: "pathway",
+      persona: selectedPersona,
+      ecosystem_links: [
+        {
+          title: "AI Safety Fundamentals Course",
+          url: isTechnical 
+            ? 'https://course.aisafetyfundamentals.com/home/alignment'
+            : 'https://course.aisafetyfundamentals.com/home/governance',
+          type: "resource"
+        }
+      ],
+      resources: [
+        {
+          title: isTechnical ? "Technical Research Papers" : "Governance Framework",
+          provider: "AI Safety Fundamentals",
+          type: "Learning Materials",
+          url: isTechnical 
+            ? 'https://course.aisafetyfundamentals.com/home/alignment/resources'
+            : 'https://course.aisafetyfundamentals.com/home/governance/resources'
+        },
+        {
+          title: "Weekly Discussions",
+          provider: "AI Safety Fundamentals",
+          type: "Interactive Sessions",
+          url: isTechnical 
+            ? 'https://course.aisafetyfundamentals.com/home/alignment/discussions'
+            : 'https://course.aisafetyfundamentals.com/home/governance/discussions'
+        }
+      ]
     }
-
-    return pathways?.filter(p => p.persona === selectedPersona) || [];
-  }, [pathways, selectedPersona, userBackground]);
-
+  ];
 
   return (
     <div className="flex min-h-screen">
@@ -405,7 +382,7 @@ export default function EcosystemMapper() {
                     'Register to save your progress and get personalized recommendations!'
                   }
                 </span>
-                <Button variant="outline" onClick={() => navigateTo('/auth')}>
+                <Button variant="outline" onClick={() => setLocation('/auth')}>
                   Register Now
                 </Button>
               </AlertDescription>
@@ -438,35 +415,36 @@ export default function EcosystemMapper() {
               <div className="space-y-8">
                 {basePathways.map((pathway) => (
                   <section key={pathway.id} className="space-y-4">
-                    <EcosystemNode
-                      nodeId={`pathway-${pathway.id}`}
-                      title={userBackground ?
-                        `${pathway.title} for ${userBackground} Professionals` :
-                        pathway.title
-                      }
-                      description={pathway.description}
-                      type="pathway"
-                      status={activeNode === pathway.id ? 'active' : undefined}
-                      links={pathway.ecosystem_links as any}
-                      onClick={() => setActiveNode(pathway.id)}
-                    />
-                    <ConnectorLine />
-                    <div className="grid md:grid-cols-2 gap-4">
-                      {pathway.resources?.map((resource: any, index: number) => (
-                        <EcosystemNode
-                          key={index}
-                          nodeId={`resource-${pathway.id}-${index}`}
-                          title={resource.title}
-                          description={`${resource.type} by ${resource.provider}`}
-                          type="resource"
-                          links={[{
-                            title: "View Resource",
-                            url: resource.url,
-                            type: "resource"
-                          }]}
-                        />
-                      ))}
-                    </div>
+                    <Card className={`p-4 border-2 transition-all relative ${activeNode === pathway.id ? 'border-primary' : ''}`}>
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="font-semibold">
+                          {userBackground ?
+                            `${pathway.title} for ${userBackground} Professionals` :
+                            pathway.title
+                          }
+                        </h3>
+                        <Badge>{pathway.type}</Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-4">{pathway.description}</p>
+                      <div className="space-y-2">
+                        <h4 className="text-sm font-medium">Resources:</h4>
+                        <div className="grid gap-2">
+                          {pathway.ecosystem_links.map((link, index) => (
+                            <a
+                              key={index}
+                              href={link.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-primary hover:underline flex items-center gap-2"
+                            >
+                              <BookOpen className="h-4 w-4" />
+                              {link.title}
+                              <ExternalLink className="h-3 w-3" />
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    </Card>
                   </section>
                 ))}
               </div>
