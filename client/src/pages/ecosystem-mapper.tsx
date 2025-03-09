@@ -603,12 +603,6 @@ export default function EcosystemMapper() {
                     </div>
                   </div>
                 )}
-
-                {/* BlueDot Course Import */}
-                <div className="space-y-6 mt-12 pt-12 border-t">
-                  <h2 className="text-2xl font-semibold">Import from BlueDot 🔄</h2>
-                  <CourseImporter />
-                </div>
               </div>
             </TabsContent>
 

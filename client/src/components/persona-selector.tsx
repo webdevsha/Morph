@@ -6,10 +6,10 @@ import { Input } from "@/components/ui/input";
 import { BackgroundAnalyzer } from "@/components/background-analyzer";
 import { AlertCircle } from "lucide-react";
 import { personas, aiSafetyStats } from "@/data/personaData";
+import { CourseImporter } from "@/components/course-importer";
 
 export function PersonaSelector() {
   const [, setLocation] = useLocation();
-  const [bluedotUrl, setBluedotUrl] = useState("");
 
   const handlePersonaSelect = (persona: typeof personas[0]) => {
     localStorage.setItem('selectedPersona', persona.id);
@@ -50,30 +50,23 @@ export function PersonaSelector() {
           ))}
         </div>
 
+        {/* BlueDot Course Import Card */}
         <Card className="p-6 mb-12 border-primary/20 bg-primary/5">
-          <div className="flex flex-col md:flex-row gap-4 items-center">
-            <AlertCircle className="h-6 w-6 text-primary flex-shrink-0" />
-            <p className="text-sm flex-grow">
-              Already a BlueDot Course learner? 🎯 Paste your course URL to automatically customize your experience
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold">Already a BlueDot Learner? 🎯</h2>
+            <p className="text-muted-foreground mt-2">
+              Import your course unit to get a personalized learning experience
             </p>
-            <div className="flex gap-2 w-full md:w-auto">
-              <Input 
-                placeholder="Paste BlueDot Course URL" 
-                value={bluedotUrl}
-                onChange={(e) => setBluedotUrl(e.target.value)}
-                className="max-w-md"
-              />
-              <Button variant="outline" onClick={() => setLocation("/ecosystem")}>
-                Import
-              </Button>
-            </div>
+          </div>
+          <div className="max-w-2xl mx-auto">
+            <CourseImporter />
           </div>
         </Card>
 
         {/* Choose Your Path Section */}
         <div className="mb-12">
           <h2 className="text-2xl font-semibold flex items-center gap-2 mb-6">
-            <span>Choose Your Path</span> 
+            <span>Or Choose Your Path</span> 
             <span className="text-2xl">🎯</span>
           </h2>
           <div className="grid grid-cols-1 gap-6">
