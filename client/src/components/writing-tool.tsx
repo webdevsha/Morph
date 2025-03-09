@@ -151,54 +151,54 @@ export function WritingTool() {
       <Card className="p-6">
         <h2 className="text-2xl font-bold mb-4">BlueDot Writing Framework</h2>
 
-        <Accordion type="single" collapsible defaultValue="step1" className="space-y-4">
+        <Accordion type="single" collapsible defaultValue="step1">
           {/* Step 1: Ideas and Audience Analysis */}
-          <AccordionItem value="step1">
-            <AccordionTrigger className="text-lg font-semibold">
+          <AccordionItem value="step1" className="border-b">
+            <AccordionTrigger className="text-lg font-semibold py-4">
               Step 1: Top Ideas & Audience Analysis
             </AccordionTrigger>
-            <AccordionContent className="space-y-4 pt-4">
-              <div className="space-y-4">
-                <div>
-                  <h3 className="font-medium mb-2">Add Your Top 5 Ideas</h3>
-                  <div className="flex gap-2">
-                    <Input 
-                      placeholder="Enter an idea"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          const input = e.target as HTMLInputElement;
-                          handleIdeaSubmit(input.value);
-                          input.value = '';
-                        }
-                      }}
-                    />
-                    <Button variant="outline" size="icon">
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <div className="mt-2">
-                    {ideas.map((idea, index) => (
-                      <div key={index} className="flex items-center gap-2 mt-2">
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                        <span>{idea}</span>
-                      </div>
-                    ))}
-                  </div>
-                  {ideas.length >= 3 && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="mt-4 w-full"
-                      onClick={() => generateAIFeedback('ideas', { ideas })}
-                      disabled={isGenerating}
-                    >
-                      <Sparkles className="h-4 w-4 mr-2" />
-                      Get AI Feedback on Ideas
-                    </Button>
-                  )}
-                  {renderAIFeedback('ideas')}
+            <AccordionContent className="pt-4 pb-6 space-y-6">
+              <div>
+                <h3 className="font-medium mb-2">Add Your Top 5 Ideas</h3>
+                <div className="flex gap-2">
+                  <Input 
+                    placeholder="Enter an idea"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        const input = e.target as HTMLInputElement;
+                        handleIdeaSubmit(input.value);
+                        input.value = '';
+                      }
+                    }}
+                  />
+                  <Button variant="outline" size="icon">
+                    <Pencil className="h-4 w-4" />
+                  </Button>
                 </div>
+                <div className="mt-2">
+                  {ideas.map((idea, index) => (
+                    <div key={index} className="flex items-center gap-2 mt-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      <span>{idea}</span>
+                    </div>
+                  ))}
+                </div>
+                {ideas.length >= 3 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-4 w-full"
+                    onClick={() => generateAIFeedback('ideas', { ideas })}
+                    disabled={isGenerating}
+                  >
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    Get AI Feedback on Ideas
+                  </Button>
+                )}
+                {renderAIFeedback('ideas')}
+              </div>
 
+              {ideas.length > 0 && (
                 <div className="space-y-4">
                   <h3 className="font-medium">Select an Idea for Analysis</h3>
                   <div className="space-y-2">
@@ -215,7 +215,7 @@ export function WritingTool() {
                   </div>
 
                   {selectedIdea && (
-                    <div className="space-y-4">
+                    <div className="space-y-4 pt-4">
                       <div>
                         <label className="block text-sm font-medium mb-1">
                           What does your target audience already understand?
@@ -277,218 +277,212 @@ export function WritingTool() {
                     </div>
                   )}
                 </div>
-              </div>
+              )}
             </AccordionContent>
           </AccordionItem>
 
           {/* Step 2: Headlines */}
-          <AccordionItem value="step2">
-            <AccordionTrigger className="text-lg font-semibold">
+          <AccordionItem value="step2" className="border-b">
+            <AccordionTrigger className="text-lg font-semibold py-4">
               Step 2: Build 10 Headlines
             </AccordionTrigger>
-            <AccordionContent className="space-y-4 pt-4">
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4 bg-accent/10 p-4 rounded-lg">
-                  <div>
-                    <h4 className="font-medium">Guidelines:</h4>
-                    <ul className="list-disc list-inside text-sm space-y-1">
-                      <li>Be clear, not clever</li>
-                      <li>Specify the WHO</li>
-                      <li>Specify the WHAT</li>
-                      <li>Specify the WHY</li>
-                    </ul>
-                  </div>
-                  <div className="text-sm">
-                    <span className="font-medium">Current Progress:</span>
-                    <div>{headlines.length}/10 headlines created</div>
-                  </div>
-                </div>
-
+            <AccordionContent className="pt-4 pb-6 space-y-6">
+              <div className="grid grid-cols-2 gap-4 bg-accent/10 p-4 rounded-lg">
                 <div>
-                  <Input 
-                    placeholder="Enter a headline following the guidelines"
-                    className="mb-2"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        const input = e.target as HTMLInputElement;
-                        handleHeadlineSubmit(input.value);
-                        input.value = '';
-                      }
-                    }}
-                  />
-                  <ScrollArea className="h-40 w-full rounded-md border p-4">
-                    {headlines.map((headline, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-2 py-2 border-b last:border-0"
-                        onClick={() => setSelectedHeadline(headline)}
-                      >
-                        <span className="font-mono text-sm text-muted-foreground">
-                          {index + 1}.
-                        </span>
-                        <span className={selectedHeadline === headline ? "font-medium" : ""}>
-                          {headline}
-                        </span>
-                      </div>
-                    ))}
-                  </ScrollArea>
-                  {headlines.length > 0 && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="mt-4 w-full"
-                      onClick={() => generateAIFeedback('headlines', { headlines, selectedIdea })}
-                      disabled={isGenerating}
-                    >
-                      <Sparkles className="h-4 w-4 mr-2" />
-                      Get AI Feedback on Headlines
-                    </Button>
-                  )}
-                  {renderAIFeedback('headlines')}
+                  <h4 className="font-medium">Guidelines:</h4>
+                  <ul className="list-disc list-inside text-sm space-y-1">
+                    <li>Be clear, not clever</li>
+                    <li>Specify the WHO</li>
+                    <li>Specify the WHAT</li>
+                    <li>Specify the WHY</li>
+                  </ul>
                 </div>
+                <div className="text-sm">
+                  <span className="font-medium">Current Progress:</span>
+                  <div>{headlines.length}/10 headlines created</div>
+                </div>
+              </div>
+
+              <div>
+                <Input 
+                  placeholder="Enter a headline following the guidelines"
+                  className="mb-2"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      const input = e.target as HTMLInputElement;
+                      handleHeadlineSubmit(input.value);
+                      input.value = '';
+                    }
+                  }}
+                />
+                <ScrollArea className="h-40 w-full rounded-md border p-4">
+                  {headlines.map((headline, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center gap-2 py-2 border-b last:border-0"
+                      onClick={() => setSelectedHeadline(headline)}
+                    >
+                      <span className="font-mono text-sm text-muted-foreground">
+                        {index + 1}.
+                      </span>
+                      <span className={selectedHeadline === headline ? "font-medium" : ""}>
+                        {headline}
+                      </span>
+                    </div>
+                  ))}
+                </ScrollArea>
+                {headlines.length > 0 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-4 w-full"
+                    onClick={() => generateAIFeedback('headlines', { headlines, selectedIdea })}
+                    disabled={isGenerating}
+                  >
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    Get AI Feedback on Headlines
+                  </Button>
+                )}
+                {renderAIFeedback('headlines')}
               </div>
             </AccordionContent>
           </AccordionItem>
 
           {/* Step 3: Story Development */}
-          <AccordionItem value="step3">
-            <AccordionTrigger className="text-lg font-semibold">
+          <AccordionItem value="step3" className="border-b">
+            <AccordionTrigger className="text-lg font-semibold py-4">
               Step 3: Your Story
             </AccordionTrigger>
-            <AccordionContent className="space-y-4 pt-4">
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    What story are you trying to tell?
-                  </label>
-                  <Textarea
-                    value={story.mainStory}
-                    onChange={(e) => setStory({
-                      ...story,
-                      mainStory: e.target.value
-                    })}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    How are you fulfilling the promise in your headline?
-                  </label>
-                  <Textarea
-                    value={story.fulfillment}
-                    onChange={(e) => setStory({
-                      ...story,
-                      fulfillment: e.target.value
-                    })}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    How are you taking the reader from A to B?
-                  </label>
-                  <Textarea
-                    value={story.journey}
-                    onChange={(e) => setStory({
-                      ...story,
-                      journey: e.target.value
-                    })}
-                  />
-                </div>
-                {story.mainStory && (
-                  <Button
-                    variant="outline"
-                    onClick={() => generateAIFeedback('story', story)}
-                    disabled={isGenerating}
-                    className="w-full"
-                  >
-                    <Sparkles className="h-4 w-4 mr-2" />
-                    Get AI Feedback on Story Structure
-                  </Button>
-                )}
-                {renderAIFeedback('story')}
+            <AccordionContent className="pt-4 pb-6 space-y-6">
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  What story are you trying to tell?
+                </label>
+                <Textarea
+                  value={story.mainStory}
+                  onChange={(e) => setStory({
+                    ...story,
+                    mainStory: e.target.value
+                  })}
+                />
               </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  How are you fulfilling the promise in your headline?
+                </label>
+                <Textarea
+                  value={story.fulfillment}
+                  onChange={(e) => setStory({
+                    ...story,
+                    fulfillment: e.target.value
+                  })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  How are you taking the reader from A to B?
+                </label>
+                <Textarea
+                  value={story.journey}
+                  onChange={(e) => setStory({
+                    ...story,
+                    journey: e.target.value
+                  })}
+                />
+              </div>
+              {story.mainStory && (
+                <Button
+                  variant="outline"
+                  onClick={() => generateAIFeedback('story', story)}
+                  disabled={isGenerating}
+                  className="w-full"
+                >
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Get AI Feedback on Story Structure
+                </Button>
+              )}
+              {renderAIFeedback('story')}
             </AccordionContent>
           </AccordionItem>
 
           {/* Step 4: Outline */}
           <AccordionItem value="step4">
-            <AccordionTrigger className="text-lg font-semibold">
+            <AccordionTrigger className="text-lg font-semibold py-4">
               Step 4: Scrappy Outline
             </AccordionTrigger>
-            <AccordionContent className="space-y-4 pt-4">
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Final Headline
-                  </label>
-                  <Input
-                    value={outline.headline}
-                    onChange={(e) => setOutline({
-                      ...outline,
-                      headline: e.target.value
-                    })}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium">
-                    Main Points
-                  </label>
-                  {outline.points.map((point, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <ArrowRight className="h-4 w-4" />
-                      <Input
-                        value={point}
-                        placeholder={`Main point ${index + 1}`}
-                        onChange={(e) => {
-                          const newPoints = [...outline.points];
-                          newPoints[index] = e.target.value;
-                          setOutline({
-                            ...outline,
-                            points: newPoints
-                          });
-                        }}
-                      />
-                    </div>
-                  ))}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setOutline({
-                      ...outline,
-                      points: [...outline.points, ""]
-                    })}
-                    className="w-full mt-2"
-                  >
-                    Add Point
-                  </Button>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    One-Sentence Conclusion
-                  </label>
-                  <Textarea
-                    value={outline.conclusion}
-                    onChange={(e) => setOutline({
-                      ...outline,
-                      conclusion: e.target.value
-                    })}
-                  />
-                </div>
-
-                {outline.headline && outline.points.some(p => p) && outline.conclusion && (
-                  <Button
-                    variant="outline"
-                    onClick={() => generateAIFeedback('outline', outline)}
-                    disabled={isGenerating}
-                    className="w-full"
-                  >
-                    <Sparkles className="h-4 w-4 mr-2" />
-                    Get AI Feedback on Outline
-                  </Button>
-                )}
-                {renderAIFeedback('outline')}
+            <AccordionContent className="pt-4 pb-6 space-y-6">
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Final Headline
+                </label>
+                <Input
+                  value={outline.headline}
+                  onChange={(e) => setOutline({
+                    ...outline,
+                    headline: e.target.value
+                  })}
+                />
               </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium">
+                  Main Points
+                </label>
+                {outline.points.map((point, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <ArrowRight className="h-4 w-4" />
+                    <Input
+                      value={point}
+                      placeholder={`Main point ${index + 1}`}
+                      onChange={(e) => {
+                        const newPoints = [...outline.points];
+                        newPoints[index] = e.target.value;
+                        setOutline({
+                          ...outline,
+                          points: newPoints
+                        });
+                      }}
+                    />
+                  </div>
+                ))}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setOutline({
+                    ...outline,
+                    points: [...outline.points, ""]
+                  })}
+                  className="w-full mt-2"
+                >
+                  Add Point
+                </Button>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  One-Sentence Conclusion
+                </label>
+                <Textarea
+                  value={outline.conclusion}
+                  onChange={(e) => setOutline({
+                    ...outline,
+                    conclusion: e.target.value
+                  })}
+                />
+              </div>
+
+              {outline.headline && outline.points.some(p => p) && outline.conclusion && (
+                <Button
+                  variant="outline"
+                  onClick={() => generateAIFeedback('outline', outline)}
+                  disabled={isGenerating}
+                  className="w-full"
+                >
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Get AI Feedback on Outline
+                </Button>
+              )}
+              {renderAIFeedback('outline')}
             </AccordionContent>
           </AccordionItem>
         </Accordion>
