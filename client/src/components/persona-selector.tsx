@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { BackgroundAnalyzer } from "@/components/background-analyzer";
 import { AlertCircle } from "lucide-react";
 import { personas, aiSafetyStats } from "@/data/personaData";
 
@@ -64,25 +65,40 @@ export function PersonaSelector() {
           </div>
         </Card>
 
-        <div className="grid gap-6 md:grid-cols-3">
-          {personas.map((persona) => (
-            <Card 
-              key={persona.id}
-              className="p-6 cursor-pointer hover:shadow-lg transition-shadow"
-              onClick={() => handlePersonaSelect(persona)}
-            >
-              <img
-                src={persona.image}
-                alt={persona.id}
-                className="w-full h-48 object-cover rounded-lg mb-4"
-              />
-              <h2 className="text-xl font-semibold mb-2">{persona.question}</h2>
-              <p className="text-muted-foreground">{persona.description}</p>
-              <Button className="w-full mt-4">
-                Select Path
-              </Button>
-            </Card>
-          ))}
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Left side: Manual persona selection */}
+          <div className="space-y-6">
+            <h2 className="text-2xl font-semibold">Choose Your Path</h2>
+            <div className="grid gap-6">
+              {personas.map((persona) => (
+                <Card 
+                  key={persona.id}
+                  className="p-6 cursor-pointer hover:shadow-lg transition-shadow"
+                  onClick={() => handlePersonaSelect(persona)}
+                >
+                  <img
+                    src={persona.image}
+                    alt={persona.id}
+                    className="w-full h-48 object-cover rounded-lg mb-4"
+                  />
+                  <h2 className="text-xl font-semibold mb-2">{persona.question}</h2>
+                  <p className="text-muted-foreground">{persona.description}</p>
+                  <Button className="w-full mt-4">
+                    Select Path
+                  </Button>
+                </Card>
+              ))}
+            </div>
+          </div>
+
+          {/* Right side: Background analysis */}
+          <div className="space-y-6">
+            <h2 className="text-2xl font-semibold">Get Personalized Path</h2>
+            <BackgroundAnalyzer onPersonaSelect={(persona) => {
+              localStorage.setItem('selectedPersona', persona);
+              setLocation('/ecosystem');
+            }} />
+          </div>
         </div>
       </div>
     </div>

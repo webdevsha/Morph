@@ -261,6 +261,63 @@ For each career path:
     }
   });
 
+  // Add this new endpoint after the existing ones
+  app.post("/api/analyze-background", async (req, res) => {
+    try {
+      const { background } = req.body;
+
+      const prompt = `Analyze this professional background and suggest the most appropriate persona for AI safety learning:
+"${background}"
+
+Choose one of these personas and explain why:
+1. technical (for those with strong technical/mathematical backgrounds)
+2. policymaker (for those interested in governance and policy)
+3. researcher (for those with research/academic backgrounds)
+
+Response format must be JSON:
+{
+  "persona": "technical|policymaker|researcher",
+  "role": "brief role description",
+  "reasoning": "explanation for the chosen persona"
+}`;
+
+      const completion = await anthropic.messages.create({
+        max_tokens: 1024,
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        model: 'claude-3-opus-20240229',
+        system: 'You are an AI safety education advisor. Map learners to the most suitable learning path.',
+      });
+
+      // Extract the first content block text
+      const messageContent = completion.content[0].text || '';
+
+      // Extract JSON from the response text
+      const jsonMatch = messageContent.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error('No valid JSON found in response');
+      }
+
+      const analysis = JSON.parse(jsonMatch[0]);
+
+      // Validate response structure
+      if (!analysis.persona || !analysis.role || !analysis.reasoning) {
+        throw new Error('Invalid response format');
+      }
+
+      res.json(analysis);
+    } catch (error: any) {
+      console.error('Background analysis error:', error);
+      res.status(500).json({
+        error: error.message || 'Failed to analyze background'
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
