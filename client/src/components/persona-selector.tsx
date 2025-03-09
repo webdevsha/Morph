@@ -4,16 +4,15 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AlertCircle } from "lucide-react";
-import { personas, aiSafetyStats } from "@/data/personaData"; // Assuming this data is in a separate file
-
+import { personas, aiSafetyStats } from "@/data/personaData";
 
 const NavBar = () => (
   <nav className="bg-gray-800 p-4">
     <div className="container mx-auto flex justify-between items-center">
       <span className="text-white text-xl font-bold">AI Safety Navigator</span>
-      <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-        Auth
-      </button>
+      <Button variant="outline" className="text-white" onClick={() => location.href = "/auth"}>
+        Sign In
+      </Button>
     </div>
   </nav>
 );
@@ -23,18 +22,14 @@ export function PersonaSelector() {
   const [bluedotUrl, setBluedotUrl] = useState("");
 
   const handlePersonaSelect = (persona: typeof personas[0]) => {
+    // Store selected persona and navigate without auth check
     localStorage.setItem('selectedPersona', persona.id);
-    switch(persona.id) {
-      case 'learner':
-        setLocation('/ecosystem');
-        break;
-      case 'parent':
-        setLocation('/tools');
-        break;
-      case 'policymaker':
-        setLocation('/ecosystem');
-        break;
-    }
+    const pathMap = {
+      'learner': '/ecosystem',
+      'parent': '/tools',
+      'policymaker': '/ecosystem'
+    };
+    setLocation(pathMap[persona.id as keyof typeof pathMap]);
   };
 
   return (
@@ -74,7 +69,7 @@ export function PersonaSelector() {
                   onChange={(e) => setBluedotUrl(e.target.value)}
                   className="max-w-md"
                 />
-                <Button variant="outline" onClick={() => setLocation("/auth")}>
+                <Button variant="outline" onClick={() => setLocation("/ecosystem")}>
                   Import
                 </Button>
               </div>
