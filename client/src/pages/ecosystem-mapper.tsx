@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ExternalLink, BookOpen, Users, GraduationCap, Globe, Loader2, MessageSquare } from "lucide-react";
+import { ExternalLink, BookOpen, Users, GraduationCap, Globe, Loader2, MessageSquare, AlertCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import {
   Dialog,
@@ -22,6 +22,7 @@ import type { Pathway } from "@shared/schema";
 import { generateLocalizedResources, type LocalizationContext } from "@/lib/ai-localization";
 import { CareerProfileForm, type CareerProfile } from "@/components/career-profile-form";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useLocation } from "wouter";
 
 type UserContext = {
   region: string;
@@ -282,7 +283,9 @@ const ConnectorLine = () => (
 );
 
 export default function EcosystemMapper() {
+  const [, setLocation] = useLocation();
   const selectedPersona = localStorage.getItem('selectedPersona') || 'learner';
+  const userBackground = localStorage.getItem('userBackground');
   const [activeNode, setActiveNode] = useState<number | null>(null);
   const [careerSuggestions, setCareerSuggestions] = useState<any>(null);
   const [careerError, setCareerError] = useState<string | null>(null);
@@ -291,6 +294,9 @@ export default function EcosystemMapper() {
   const { data: pathways, isLoading } = useQuery<Pathway[]>({
     queryKey: ["/api/pathways"],
   });
+
+  // Registration prompt
+  const [showRegistration, setShowRegistration] = useState(true);
 
   const handleCareerProfile = async (profile: CareerProfile) => {
     try {
@@ -317,26 +323,56 @@ export default function EcosystemMapper() {
     }
   };
 
+  const navigateTo = (path: string) => {
+    setLocation(path);
+  }
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
-  const filteredPathways = pathways?.filter(p => p.persona === selectedPersona);
+  // Filter pathways based on persona and userBackground
+  const basePathways = pathways?.filter(p => p.persona === selectedPersona) || [];
 
   return (
     <div className="flex min-h-screen">
       <DashboardSidebar />
-      <main className="flex-1 p-6 overflow-auto bg-gray-50/50">
+      <main className="flex-1 p-6 overflow-auto bg-background">
         <div className="max-w-5xl mx-auto">
+          {showRegistration && (
+            <Alert className="mb-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Save Your Progress</AlertTitle>
+              <AlertDescription className="flex items-center justify-between">
+                <span>
+                  {userBackground ?
+                    `Your learning path is customized for your ${userBackground} background. Register to save your progress!` :
+                    'Register to save your progress and get personalized recommendations!'
+                  }
+                </span>
+                <Button variant="outline" onClick={() => navigateTo('/auth')}>
+                  Register Now
+                </Button>
+              </AlertDescription>
+            </Alert>
+          )}
+
           <div className="mb-8">
-            <h1 className="text-3xl font-bold">AI Safety Ecosystem Map</h1>
+            <h1 className="text-3xl font-bold">
+              {userBackground ?
+                `AI Safety Learning Path for ${userBackground}` :
+                'AI Safety Ecosystem Map'
+              }
+            </h1>
             <p className="text-muted-foreground mt-2">
-              Explore the interconnected landscape of AI safety knowledge and resources
+              {userBackground ?
+                `A customized learning journey leveraging your ${userBackground} expertise` :
+                'Explore the interconnected landscape of AI safety knowledge and resources'
+              }
             </p>
           </div>
 
@@ -349,11 +385,14 @@ export default function EcosystemMapper() {
 
             <TabsContent value="pathways">
               <div className="space-y-8">
-                {filteredPathways?.map((pathway) => (
+                {basePathways.map((pathway) => (
                   <section key={pathway.id} className="space-y-4">
                     <EcosystemNode
                       nodeId={`pathway-${pathway.id}`}
-                      title={pathway.title}
+                      title={userBackground ?
+                        `${pathway.title} for ${userBackground} Professionals` :
+                        pathway.title
+                      }
                       description={pathway.description}
                       type="pathway"
                       status={activeNode === pathway.id ? 'active' : undefined}

@@ -37,8 +37,11 @@ export function BackgroundAnalyzer({ onPersonaSelect }: BackgroundAnalyzerProps)
       }
 
       const data = await response.json();
+
+      // Store both the persona and the background
+      localStorage.setItem('userBackground', background);
       onPersonaSelect(data.persona);
-      
+
       toast({
         title: "Path Selected",
         description: `We've found the perfect learning path for your ${data.role} background!`,
