@@ -40,8 +40,7 @@ Format the response as:
       "title": "string",
       "type": "paper|course|organization",
       "url": "string",
-      "description": "string",
-      "relevance": "string"
+      "description": "string"
     }
   ],
   "caseStudies": [
@@ -50,21 +49,19 @@ Format the response as:
       "description": "string",
       "region": "string"
     }
-  ],
-  "culturalContext": {
-    "adaptations": ["string"],
-    "considerations": ["string"]
-  }
+  ]
 }`;
 
   try {
     const response = await openai.chat.completions.create({
       model: "deepseek-chat",  // Using DeepSeek's chat model
       messages: [
-        { role: "system", content: "You are an AI safety education expert with deep knowledge of regional contexts and cultural considerations." },
+        { role: "system", content: "You are a regional AI safety education expert." },
         { role: "user", content: prompt }
       ],
-      response_format: { type: "json_object" }
+      response_format: { type: "json_object" },
+      max_tokens: 500, // Limit response size
+      temperature: 0.7 // Add some variability but keep it focused
     });
 
     if (!response.choices[0].message.content) {
@@ -73,7 +70,7 @@ Format the response as:
 
     const content = JSON.parse(response.choices[0].message.content);
 
-    // Validate the response structure
+    // Validate response structure
     if (!content.resources || !Array.isArray(content.resources)) {
       throw new Error('Invalid response format: missing resources array');
     }
@@ -81,7 +78,11 @@ Format the response as:
     return content;
   } catch (error: any) {
     console.error('Error generating localized resources:', error);
-    // Provide more specific error message based on the error type
+    if (error.status === 402) {
+      throw new Error('API rate limit exceeded. Please try again later.');
+    } else if (error.status === 401) {
+      throw new Error('API authentication failed. Please check your API key.');
+    }
     throw new Error(error.message || 'Failed to generate localized content');
   }
 }

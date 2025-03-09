@@ -160,10 +160,11 @@ const EcosystemNode = ({
         title: "Content Localized Successfully",
         description: `Resources have been adapted for ${context.region}`,
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Localization error:', error);
       toast({
         title: "Localization Failed",
-        description: "Unable to generate region-specific content. Please try again.",
+        description: error.message || "Unable to generate region-specific content. Please try again.",
         variant: "destructive",
       });
     } finally {
