@@ -11,6 +11,7 @@ import NotFound from "@/pages/not-found";
 import { ProtectedRoute } from "./lib/protected-route";
 import { PersonaSelector } from "@/components/persona-selector";
 import { NavBar } from "@/components/nav-bar";
+import Philosophy from "@/pages/philosophy";
 
 function Router() {
   return (
@@ -21,6 +22,7 @@ function Router() {
         <Route path="/auth" component={AuthPage} />
         <Route path="/ecosystem" component={EcosystemMapper} />
         <Route path="/tools" component={Tools} />
+        <Route path="/philosophy" component={Philosophy} />
         <ProtectedRoute path="/dashboard" component={HomePage} />
         <Route component={NotFound} />
       </Switch>
