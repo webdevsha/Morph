@@ -1,8 +1,7 @@
 import OpenAI from 'openai';
 
 const openai = new OpenAI({
-  apiKey: import.meta.env.VITE_DEEPSEEK_API_KEY,
-  baseURL: "https://api.deepseek.com/v1",  // Adjust if needed
+  apiKey: import.meta.env.VITE_OPENAI_API_KEY,
   dangerouslyAllowBrowser: true // Enable browser-side API calls
 });
 
@@ -54,7 +53,7 @@ Format the response as:
 
   try {
     const response = await openai.chat.completions.create({
-      model: "deepseek-chat",  // Using DeepSeek's chat model
+      model: "gpt-4-1106-preview",  // Using the latest GPT-4 model with JSON mode
       messages: [
         { role: "system", content: "You are a regional AI safety education expert." },
         { role: "user", content: prompt }
