@@ -8,7 +8,8 @@ import {
   Wrench, 
   LogOut,
   Map,
-  HeartHandshake
+  HeartHandshake,
+  Network
 } from "lucide-react";
 
 export function DashboardSidebar() {
@@ -29,6 +30,13 @@ export function DashboardSidebar() {
             </Link>
 
             <Link href="/ecosystem">
+              <Button variant="ghost" className="w-full justify-start">
+                <Network className="mr-2 h-4 w-4" />
+                Global Ecosystem
+              </Button>
+            </Link>
+
+            <Link href="/ecosystem-mapper">
               <Button variant="ghost" className="w-full justify-start">
                 <Map className="mr-2 h-4 w-4" />
                 Ecosystem Mapper

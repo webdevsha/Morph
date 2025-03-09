@@ -8,10 +8,10 @@ import { CourseImporter } from "@/components/course-importer";
 
 const personas = [
   {
-    id: 'technical',
-    image: "/personas/technical.jpg",
-    title: "Technical Path",
-    description: "For engineers, researchers, and technical professionals looking to understand and implement AI safety principles in their work.",
+    id: 'policymaker',
+    image: "/personas/policymaker.jpg",
+    title: "Policymaker Path",
+    description: "For policy professionals and regulators seeking to understand AI safety principles for effective governance and oversight.",
   },
   {
     id: 'regional',
@@ -101,7 +101,7 @@ export function PersonaSelector() {
           <h2 className="text-2xl font-semibold mb-6">Choose Your Path</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {personas.map((persona) => (
-              <Card 
+              <Card
                 key={persona.id}
                 className="p-6 cursor-pointer hover:shadow-lg transition-all border-primary/20 hover:border-primary"
                 onClick={() => handlePersonaSelect(persona)}
