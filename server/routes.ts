@@ -318,82 +318,60 @@ Response format must be JSON:
     }
   });
 
-  // Add this new endpoint after existing endpoints
+  // Replace the existing /api/customize-course endpoint
   app.post("/api/customize-course", async (req, res) => {
     try {
       const { background } = req.body;
 
-      const prompt = `Given a learner with this background: "${background}", customize these AI Impact course units:
+      const prompt = `Given a learner with this background: "${background}", customize these AI Impact course units with a focus on risks:
 
-1. Understanding AI Systems
-2. AI Impact on Society
-3. Future of AI and Safety
+1. Beyond chatbots & AI capabilities 
+2. AGI on the horizon
+3. AGI impact on society
 
-For each unit, provide:
-- A customized title that relates to their background and emphasizes safety/risks
-- A description that connects the topic to their field, highlighting potential risks and safety considerations
-- Specific examples from their domain showing both benefits and risks
-- Learning outcomes relevant to their expertise
-- 1-2 relevant resources (papers, articles, or tools) specifically chosen for their background
+For each unit provide in a clear, concise format:
+- Title (adapted to their field)
+- Brief description with focus on risks
+- Two key examples from their field
+- One relevant resource
 
-Response format must be JSON with no trailing commas:
+Response must be valid JSON with this exact format:
 {
   "units": [
     {
       "title": "string",
       "description": "string",
-      "examples": ["string"],
-      "outcomes": ["string"],
-      "resources": [
-        {
-          "title": "string",
-          "url": "string",
-          "type": "paper|article|tool",
-          "description": "string"
-        }
-      ]
+      "examples": ["string", "string"],
+      "resource": {
+        "title": "string",
+        "url": "string",
+        "type": "paper|article|tool"
+      }
     }
   ]
 }`;
 
       const completion = await anthropic.messages.create({
         max_tokens: 1024,
-        messages: [
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
+        messages: [{ role: 'user', content: prompt }],
         model: 'claude-3-opus-20240229',
-        system: 'You are an AI education expert specializing in personalizing learning paths. Focus on safety implications and risks specific to the learner\'s field. Always provide valid JSON responses without trailing commas.',
+        system: 'You are an AI safety education expert. Keep responses concise and focused on field-specific risks.',
       });
 
-      // Extract the first content block text and clean it
       const messageContent = completion.content[0].text || '';
-
-      // Find and clean JSON content
       const jsonMatch = messageContent.match(/\{[\s\S]*\}/);
+
       if (!jsonMatch) {
         throw new Error('No valid JSON found in response');
       }
 
-      let jsonString = jsonMatch[0];
-      // Remove any trailing commas before arrays close
-      jsonString = jsonString.replace(/,(\s*[\]}])/g, '$1');
+      const customizedContent = JSON.parse(jsonMatch[0]);
 
-      try {
-        const customizedContent = JSON.parse(jsonString);
-
-        // Validate response structure
-        if (!customizedContent.units || !Array.isArray(customizedContent.units)) {
-          throw new Error('Invalid response format: missing units array');
-        }
-
-        res.json(customizedContent);
-      } catch (parseError) {
-        console.error('JSON parse error:', parseError, 'Raw JSON:', jsonString);
-        throw new Error('Failed to parse customized content');
+      if (!customizedContent.units || !Array.isArray(customizedContent.units)) {
+        throw new Error('Invalid response format: missing units array');
       }
+
+      res.json(customizedContent);
     } catch (error: any) {
       console.error('Course customization error:', error);
       res.status(500).json({

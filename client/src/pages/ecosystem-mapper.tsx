@@ -28,8 +28,11 @@ type CourseUnit = {
   title: string;
   description: string;
   examples: string[];
-  outcomes: string[];
-  resources?: Array<{ title: string; url: string; type: string }>;
+  resource: {
+    title: string;
+    url: string;
+    type: string;
+  };
 };
 
 const LocalizationForm = ({ onSave, initialContext }: {
@@ -563,59 +566,35 @@ export default function EcosystemMapper() {
                                 <p className="text-muted-foreground">{unit.description}</p>
                               </div>
 
-                              <div className="grid md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                  <h5 className="font-medium flex items-center gap-2">
-                                    <span>Key Examples</span>
-                                    <span>🔍</span>
-                                  </h5>
-                                  <ul className="list-disc list-inside space-y-1">
-                                    {unit.examples.map((example, i) => (
-                                      <li key={i} className="text-muted-foreground">{example}</li>
-                                    ))}
-                                  </ul>
-                                </div>
-
-                                <div className="space-y-2">
-                                  <h5 className="font-medium flex items-center gap-2">
-                                    <span>Learning Outcomes</span>
-                                    <span>🎯</span>
-                                  </h5>
-                                  <ul className="list-disc list-inside space-y-1">
-                                    {unit.outcomes.map((outcome, i) => (
-                                      <li key={i} className="text-muted-foreground">{outcome}</li>
-                                    ))}
-                                  </ul>
-                                </div>
+                              <div className="space-y-2">
+                                <h5 className="font-medium flex items-center gap-2">
+                                  <span>Key Examples</span>
+                                  <span>🔍</span>
+                                </h5>
+                                <ul className="list-disc list-inside space-y-1">
+                                  {unit.examples.map((example, i) => (
+                                    <li key={i} className="text-muted-foreground">{example}</li>
+                                  ))}
+                                </ul>
                               </div>
 
-                              {unit.resources && unit.resources.length > 0 && (
-                                <div className="mt-4 space-y-2">
-                                  <h5 className="font-medium flex items-center gap-2">
-                                    <span>Recommended Resources</span>
-                                    <span>📚</span>
-                                  </h5>
-                                  <div className="grid gap-2">
-                                    {unit.resources.map((resource, i) => (
-                                      <a
-                                        key={i}
-                                        href={resource.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="block p-3 rounded-lg border bg-background hover:bg-accent/5 transition-colors"
-                                      >
-                                        <div className="flex justify-between items-start">
-                                          <span className="font-medium">{resource.title}</span>
-                                          <Badge variant="outline">{resource.type}</Badge>
-                                        </div>
-                                        <p className="text-sm text-muted-foreground mt-1">
-                                          {resource.description}
-                                        </p>
-                                      </a>
-                                    ))}
+                              <div className="mt-4">
+                                <h5 className="font-medium flex items-center gap-2 mb-2">
+                                  <span>Recommended Resource</span>
+                                  <span>📚</span>
+                                </h5>
+                                <a
+                                  href={unit.resource.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="block p-3 rounded-lg border bg-background hover:bg-accent/5 transition-colors"
+                                >
+                                  <div className="flex justify-between items-start">
+                                    <span className="font-medium">{unit.resource.title}</span>
+                                    <Badge variant="outline">{unit.resource.type}</Badge>
                                   </div>
-                                </div>
-                              )}
+                                </a>
+                              </div>
                             </div>
                           </div>
                         </Card>
