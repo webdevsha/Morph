@@ -60,8 +60,8 @@ export function WritingTool() {
     <div className="space-y-6">
       <Card className="p-6">
         <h2 className="text-2xl font-bold mb-4">BlueDot Writing Framework</h2>
-        
-        <Accordion type="single" collapsible className="space-y-4">
+
+        <Accordion type="single" collapsible defaultValue="step1" className="space-y-4">
           {/* Step 1: Ideas and Audience Analysis */}
           <AccordionItem value="step1">
             <AccordionTrigger className="text-lg font-semibold">
@@ -98,16 +98,18 @@ export function WritingTool() {
 
                 <div className="space-y-4">
                   <h3 className="font-medium">Select an Idea for Analysis</h3>
-                  <select
-                    className="w-full p-2 border rounded"
-                    value={selectedIdea}
-                    onChange={(e) => setSelectedIdea(e.target.value)}
-                  >
-                    <option value="">Select an idea</option>
+                  <div className="space-y-2">
                     {ideas.map((idea, index) => (
-                      <option key={index} value={idea}>{idea}</option>
+                      <Button
+                        key={index}
+                        variant={selectedIdea === idea ? "default" : "outline"}
+                        className="w-full justify-start text-left"
+                        onClick={() => setSelectedIdea(idea)}
+                      >
+                        {idea}
+                      </Button>
                     ))}
-                  </select>
+                  </div>
 
                   {selectedIdea && (
                     <div className="space-y-4">
@@ -288,7 +290,7 @@ export function WritingTool() {
                     })}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <label className="block text-sm font-medium">
                     Main Points
