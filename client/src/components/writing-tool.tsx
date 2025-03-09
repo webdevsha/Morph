@@ -11,7 +11,25 @@ import {
 } from "@/components/ui/accordion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
-import { Pencil, CheckCircle, ArrowRight } from "lucide-react";
+import { Pencil, CheckCircle, ArrowRight, Loader2, Sparkles } from "lucide-react";
+
+// Add AI feedback interface
+type AIFeedback = {
+  ideas?: string[];
+  audience?: {
+    suggestions: string[];
+    improvements: string[];
+  };
+  headlines?: string[];
+  story?: {
+    structure: string[];
+    improvements: string[];
+  };
+  outline?: {
+    suggestions: string[];
+    flow: string[];
+  };
+};
 
 export function WritingTool() {
   const { toast } = useToast();
@@ -36,6 +54,37 @@ export function WritingTool() {
     conclusion: ""
   });
 
+  // Add AI feedback state
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [aiFeedback, setAiFeedback] = useState<AIFeedback>({});
+
+  const generateAIFeedback = async (step: string, content: any) => {
+    setIsGenerating(true);
+    try {
+      const response = await fetch('/api/writing-feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ step, content })
+      });
+
+      const feedback = await response.json();
+      setAiFeedback(prev => ({ ...prev, ...feedback }));
+
+      toast({
+        title: "AI Feedback Generated",
+        description: "Review the suggestions to improve your content",
+      });
+    } catch (error) {
+      toast({
+        title: "Failed to generate feedback",
+        description: "Please try again later",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const handleIdeaSubmit = (newIdea: string) => {
     if (ideas.length < 5) {
       setIdeas([...ideas, newIdea]);
@@ -54,6 +103,47 @@ export function WritingTool() {
         description: `${10 - headlines.length - 1} more headlines to go!`,
       });
     }
+  };
+
+  const renderAIFeedback = (feedbackType: keyof AIFeedback) => {
+    if (isGenerating) {
+      return (
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Generating AI feedback...
+        </div>
+      );
+    }
+
+    const feedback = aiFeedback[feedbackType];
+    if (!feedback) return null;
+
+    return (
+      <div className="mt-4 p-4 bg-primary/5 rounded-lg space-y-2">
+        <div className="flex items-center gap-2 text-primary font-medium">
+          <Sparkles className="h-4 w-4" />
+          AI Suggestions
+        </div>
+        {Array.isArray(feedback) ? (
+          <ul className="list-disc list-inside space-y-1 text-sm">
+            {feedback.map((item, i) => (
+              <li key={i}>{item}</li>
+            ))}
+          </ul>
+        ) : (
+          Object.entries(feedback).map(([key, items]) => (
+            <div key={key}>
+              <h4 className="font-medium capitalize">{key}:</h4>
+              <ul className="list-disc list-inside space-y-1 text-sm">
+                {items.map((item: string, i: number) => (
+                  <li key={i}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          ))
+        )}
+      </div>
+    );
   };
 
   return (
@@ -94,6 +184,19 @@ export function WritingTool() {
                       </div>
                     ))}
                   </div>
+                  {ideas.length >= 3 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="mt-4"
+                      onClick={() => generateAIFeedback('ideas', { ideas })}
+                      disabled={isGenerating}
+                    >
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      Get AI Feedback on Ideas
+                    </Button>
+                  )}
+                  {renderAIFeedback('ideas')}
                 </div>
 
                 <div className="space-y-4">
@@ -161,6 +264,15 @@ export function WritingTool() {
                           })}
                         />
                       </div>
+                      <Button
+                        variant="outline"
+                        onClick={() => generateAIFeedback('audience', audienceAnalysis)}
+                        disabled={isGenerating}
+                      >
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Get AI Feedback on Audience Analysis
+                      </Button>
+                      {renderAIFeedback('audience')}
                     </div>
                   )}
                 </div>
@@ -219,6 +331,19 @@ export function WritingTool() {
                       </div>
                     ))}
                   </ScrollArea>
+                  {headlines.length > 0 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="mt-4"
+                      onClick={() => generateAIFeedback('headlines', { headlines, selectedIdea })}
+                      disabled={isGenerating}
+                    >
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      Get AI Feedback on Headlines
+                    </Button>
+                  )}
+                  {renderAIFeedback('headlines')}
                 </div>
               </div>
             </AccordionContent>
@@ -267,6 +392,17 @@ export function WritingTool() {
                     })}
                   />
                 </div>
+                {story.mainStory && (
+                  <Button
+                    variant="outline"
+                    onClick={() => generateAIFeedback('story', story)}
+                    disabled={isGenerating}
+                  >
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    Get AI Feedback on Story Structure
+                  </Button>
+                )}
+                {renderAIFeedback('story')}
               </div>
             </AccordionContent>
           </AccordionItem>
@@ -336,6 +472,18 @@ export function WritingTool() {
                     })}
                   />
                 </div>
+
+                {outline.headline && outline.points.some(p => p) && outline.conclusion && (
+                  <Button
+                    variant="outline"
+                    onClick={() => generateAIFeedback('outline', outline)}
+                    disabled={isGenerating}
+                  >
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    Get AI Feedback on Outline
+                  </Button>
+                )}
+                {renderAIFeedback('outline')}
               </div>
             </AccordionContent>
           </AccordionItem>

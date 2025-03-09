@@ -37,7 +37,76 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(tools);
   });
 
-  // New endpoint for content localization
+  // Writing feedback endpoint
+  app.post("/api/writing-feedback", async (req, res) => {
+    try {
+      const { step, content: inputContent } = req.body;
+
+      let prompt = '';
+      let responseFormat = '';
+
+      switch (step) {
+        case 'ideas':
+          prompt = `Analyze these content ideas for an AI safety article:\n${inputContent.ideas.join('\n')}\n\nProvide feedback on:\n1. Relevance to AI safety\n2. Potential impact\n3. Suggestions for improvement`;
+          responseFormat = '{ "ideas": ["suggestion1", "suggestion2", ...] }';
+          break;
+
+        case 'audience':
+          prompt = `Review this audience analysis for an AI safety article:\nCurrent Understanding: ${inputContent.understanding}\nExcluded Topics: ${inputContent.notExplaining}\nInterest Factors: ${inputContent.interest}\nTakeaways: ${inputContent.takeaways}\n\nProvide structured feedback on the analysis.`;
+          responseFormat = '{ "audience": { "suggestions": ["point1", ...], "improvements": ["improvement1", ...] } }';
+          break;
+
+        case 'headlines':
+          prompt = `Review these headlines for an AI safety article:\n${inputContent.headlines.join('\n')}\n\nThe main idea is: ${inputContent.selectedIdea}\n\nAnalyze for clarity, specificity, and appeal. Suggest improvements.`;
+          responseFormat = '{ "headlines": ["suggestion1", "suggestion2", ...] }';
+          break;
+
+        case 'story':
+          prompt = `Review this story structure for an AI safety article:\nMain Story: ${inputContent.mainStory}\nPromise Fulfillment: ${inputContent.fulfillment}\nReader Journey: ${inputContent.journey}\n\nProvide feedback on narrative flow and engagement.`;
+          responseFormat = '{ "story": { "structure": ["point1", ...], "improvements": ["improvement1", ...] } }';
+          break;
+
+        case 'outline':
+          prompt = `Review this article outline:\nHeadline: ${inputContent.headline}\nMain Points:\n${inputContent.points.join('\n')}\nConclusion: ${inputContent.conclusion}\n\nAnalyze structure and flow, suggest improvements.`;
+          responseFormat = '{ "outline": { "suggestions": ["suggestion1", ...], "flow": ["improvement1", ...] } }';
+          break;
+
+        default:
+          throw new Error('Invalid feedback step');
+      }
+
+      const completion = await anthropic.messages.create({
+        max_tokens: 1024,
+        messages: [
+          {
+            role: 'user',
+            content: `${prompt}\n\nProvide feedback in this exact JSON format:\n${responseFormat}`
+          }
+        ],
+        model: 'claude-3-opus-20240229',
+        system: 'You are an expert writing coach specializing in AI safety content. Provide specific, actionable feedback.',
+      });
+
+      // Extract the first content block text
+      const messageContent = completion.content[0].text || '';
+
+      // Extract JSON from the response text
+      const jsonMatch = messageContent.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error('No valid JSON found in response');
+      }
+
+      const feedbackContent = JSON.parse(jsonMatch[0]);
+      res.json(feedbackContent);
+    } catch (error: any) {
+      console.error('Writing feedback error:', error);
+      res.status(500).json({
+        error: error.message || 'Failed to generate writing feedback'
+      });
+    }
+  });
+
+  // Content localization endpoint
   app.post("/api/localize", async (req, res) => {
     try {
       const { nodeTitle, nodeDescription, context } = req.body;
@@ -87,24 +156,23 @@ The response MUST follow this exact JSON format:
         system: 'You are a regional AI safety education expert. Always respond with valid JSON.',
       });
 
-      if (!completion.content[0].text) {
-        throw new Error('Empty response from API');
-      }
+      // Extract the first content block text
+      const messageContent = completion.content[0].text || '';
 
       // Extract JSON from the response text
-      const jsonMatch = completion.content[0].text.match(/\{[\s\S]*\}/);
+      const jsonMatch = messageContent.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
         throw new Error('No valid JSON found in response');
       }
 
-      const content = JSON.parse(jsonMatch[0]);
+      const responseContent = JSON.parse(jsonMatch[0]);
 
       // Validate response structure
-      if (!content.resources || !Array.isArray(content.resources)) {
+      if (!responseContent.resources || !Array.isArray(responseContent.resources)) {
         throw new Error('Invalid response format: missing resources array');
       }
 
-      res.json(content);
+      res.json(responseContent);
     } catch (error: any) {
       console.error('Localization error:', error);
       res.status(500).json({
