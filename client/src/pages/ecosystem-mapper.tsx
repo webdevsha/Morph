@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ExternalLink, BookOpen, Users, GraduationCap, Globe, Loader2, MessageSquare, AlertCircle } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -24,25 +24,15 @@ import { CareerProfileForm, type CareerProfile } from "@/components/career-profi
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useLocation } from "wouter";
 
-type UserContext = {
-  region: string;
-  background: string;
-  experience: string;
-  interests: string;
-};
-
-type EcosystemNodeProps = {
+type CourseUnit = {
   title: string;
   description: string;
-  type: 'pathway' | 'resource' | 'organization';
-  status?: 'completed' | 'active' | 'locked';
-  links?: Array<{ title: string; url: string; type: string }>;
-  onClick?: () => void;
-  nodeId: string;
+  examples: string[];
+  outcomes: string[];
 };
 
 const LocalizationForm = ({ onSave, initialContext }: {
-  onSave: (context: UserContext) => void;
+  onSave: (context: LocalizationContext) => void;
   initialContext?: UserContext;
 }) => {
   const { toast } = useToast();
@@ -275,6 +265,23 @@ const ConnectorLine = () => (
   <div className="w-px h-8 bg-primary/30 mx-auto" />
 );
 
+type UserContext = {
+  region: string;
+  background: string;
+  experience: string;
+  interests: string;
+};
+
+type EcosystemNodeProps = {
+  title: string;
+  description: string;
+  type: 'pathway' | 'resource' | 'organization';
+  status?: 'completed' | 'active' | 'locked';
+  links?: Array<{ title: string; url: string; type: string }>;
+  onClick?: () => void;
+  nodeId: string;
+};
+
 export default function EcosystemMapper() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
@@ -284,11 +291,38 @@ export default function EcosystemMapper() {
   const [careerSuggestions, setCareerSuggestions] = useState<any>(null);
   const [careerError, setCareerError] = useState<string | null>(null);
   const [showRegistration] = useState(true);
+  const [courseUnits, setCourseUnits] = useState<CourseUnit[]>([]);
+  const [isLoadingUnits, setIsLoadingUnits] = useState(false);
 
   // Get user context
   const selectedPersona = localStorage.getItem('selectedPersona') || 'learner';
   const userBackground = localStorage.getItem('userBackground');
   const isTechnical = selectedPersona === 'technical';
+
+  // Fetch customized course units when userBackground exists
+  useEffect(() => {
+    if (userBackground) {
+      setIsLoadingUnits(true);
+      fetch('/api/customize-course', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ background: userBackground })
+      })
+        .then(res => res.json())
+        .then(data => {
+          setCourseUnits(data.units);
+        })
+        .catch(error => {
+          console.error('Failed to load customized units:', error);
+          toast({
+            title: "Error",
+            description: "Failed to load customized course content",
+            variant: "destructive"
+          });
+        })
+        .finally(() => setIsLoadingUnits(false));
+    }
+  }, [userBackground, toast]);
 
   // Fetch pathways
   const { data: pathways, isLoading } = useQuery<Pathway[]>({
@@ -339,28 +373,10 @@ export default function EcosystemMapper() {
       ecosystem_links: [
         {
           title: "AI Safety Fundamentals Course",
-          url: isTechnical 
+          url: isTechnical
             ? 'https://course.aisafetyfundamentals.com/home/alignment'
             : 'https://course.aisafetyfundamentals.com/home/governance',
           type: "resource"
-        }
-      ],
-      resources: [
-        {
-          title: isTechnical ? "Technical Research Papers" : "Governance Framework",
-          provider: "AI Safety Fundamentals",
-          type: "Learning Materials",
-          url: isTechnical 
-            ? 'https://course.aisafetyfundamentals.com/home/alignment/resources'
-            : 'https://course.aisafetyfundamentals.com/home/governance/resources'
-        },
-        {
-          title: "Weekly Discussions",
-          provider: "AI Safety Fundamentals",
-          type: "Interactive Sessions",
-          url: isTechnical 
-            ? 'https://course.aisafetyfundamentals.com/home/alignment/discussions'
-            : 'https://course.aisafetyfundamentals.com/home/governance/discussions'
         }
       ]
     }
@@ -413,21 +429,22 @@ export default function EcosystemMapper() {
 
             <TabsContent value="pathways">
               <div className="space-y-8">
+                {/* Core Fundamentals */}
                 {basePathways.map((pathway) => (
                   <section key={pathway.id} className="space-y-4">
-                    <Card className={`p-4 border-2 transition-all relative ${activeNode === pathway.id ? 'border-primary' : ''}`}>
-                      <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-semibold">
+                    <Card className="p-6 border-2 border-primary/20">
+                      <div className="flex justify-between items-start mb-4">
+                        <h3 className="text-xl font-semibold">
                           {userBackground ?
                             `${pathway.title} for ${userBackground} Professionals` :
                             pathway.title
                           }
                         </h3>
-                        <Badge>{pathway.type}</Badge>
+                        <Badge variant="outline">{pathway.type}</Badge>
                       </div>
-                      <p className="text-sm text-muted-foreground mb-4">{pathway.description}</p>
+                      <p className="text-muted-foreground mb-4">{pathway.description}</p>
                       <div className="space-y-2">
-                        <h4 className="text-sm font-medium">Resources:</h4>
+                        <h4 className="text-sm font-medium">Core Resources:</h4>
                         <div className="grid gap-2">
                           {pathway.ecosystem_links.map((link, index) => (
                             <a
@@ -447,6 +464,60 @@ export default function EcosystemMapper() {
                     </Card>
                   </section>
                 ))}
+
+                {/* Customized Course Units */}
+                {isLoadingUnits ? (
+                  <div className="flex items-center justify-center p-12">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                ) : courseUnits.length > 0 && (
+                  <div className="space-y-6">
+                    <h2 className="text-2xl font-semibold">Customized Learning Units 📚</h2>
+                    <div className="grid gap-6">
+                      {courseUnits.map((unit, index) => (
+                        <Card key={index} className="p-6 hover:shadow-lg transition-all">
+                          <div className="flex items-start gap-4">
+                            <div className="rounded-full p-2 bg-primary/10">
+                              <BookOpen className="h-6 w-6 text-primary" />
+                            </div>
+                            <div className="space-y-4 flex-1">
+                              <div>
+                                <h4 className="text-xl font-semibold mb-2">{unit.title}</h4>
+                                <p className="text-muted-foreground">{unit.description}</p>
+                              </div>
+
+                              <div className="grid md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                  <h5 className="font-medium flex items-center gap-2">
+                                    <span>Key Examples</span>
+                                    <span>🔍</span>
+                                  </h5>
+                                  <ul className="list-disc list-inside space-y-1">
+                                    {unit.examples.map((example, i) => (
+                                      <li key={i} className="text-muted-foreground">{example}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+
+                                <div className="space-y-2">
+                                  <h5 className="font-medium flex items-center gap-2">
+                                    <span>Learning Outcomes</span>
+                                    <span>🎯</span>
+                                  </h5>
+                                  <ul className="list-disc list-inside space-y-1">
+                                    {unit.outcomes.map((outcome, i) => (
+                                      <li key={i} className="text-muted-foreground">{outcome}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </TabsContent>
 
