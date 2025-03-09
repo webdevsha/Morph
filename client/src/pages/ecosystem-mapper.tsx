@@ -4,8 +4,19 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ExternalLink, BookOpen, Users, GraduationCap } from "lucide-react";
+import { ExternalLink, BookOpen, Users, GraduationCap, Globe } from "lucide-react";
 import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { Pathway } from "@shared/schema";
 
 type EcosystemNodeProps = {
@@ -15,6 +26,76 @@ type EcosystemNodeProps = {
   status?: 'completed' | 'active' | 'locked';
   links?: Array<{ title: string; url: string; type: string }>;
   onClick?: () => void;
+};
+
+const LocalizationForm = () => {
+  const [formData, setFormData] = useState({
+    region: '',
+    background: '',
+    experience: '',
+    interests: ''
+  });
+
+  const handleSave = () => {
+    localStorage.setItem('userContext', JSON.stringify(formData));
+    // Here we would typically make an API call to update the backend
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="region">Region</Label>
+        <Select onValueChange={(value) => setFormData(prev => ({ ...prev, region: value }))}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select your region" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="asia">Asia Pacific</SelectItem>
+            <SelectItem value="europe">Europe</SelectItem>
+            <SelectItem value="namerica">North America</SelectItem>
+            <SelectItem value="samerica">South America</SelectItem>
+            <SelectItem value="africa">Africa</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="background">Professional Background</Label>
+        <Input 
+          id="background"
+          placeholder="e.g., Policy Analyst, Researcher"
+          onChange={(e) => setFormData(prev => ({ ...prev, background: e.target.value }))}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="experience">AI Safety Experience Level</Label>
+        <Select onValueChange={(value) => setFormData(prev => ({ ...prev, experience: value }))}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select your experience level" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="beginner">Beginner</SelectItem>
+            <SelectItem value="intermediate">Intermediate</SelectItem>
+            <SelectItem value="advanced">Advanced</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="interests">Specific Interests</Label>
+        <Input 
+          id="interests"
+          placeholder="e.g., AI Policy, Ethics, Technical Safety"
+          onChange={(e) => setFormData(prev => ({ ...prev, interests: e.target.value }))}
+        />
+      </div>
+
+      <Button className="w-full mt-4" onClick={handleSave}>
+        Personalize My Learning Path
+      </Button>
+    </div>
+  );
 };
 
 const EcosystemNode = ({ 
@@ -37,9 +118,28 @@ const EcosystemNode = ({
   >
     <div className="flex justify-between items-start mb-2">
       <h3 className="font-semibold">{title}</h3>
-      <Badge variant={type === 'pathway' ? 'default' : 'secondary'}>
-        {type}
-      </Badge>
+      <div className="flex gap-2 items-center">
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline" size="sm" className="gap-1">
+              <Globe className="h-4 w-4" />
+              Localize
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Personalize Your Learning Path</DialogTitle>
+              <DialogDescription>
+                Share your background to receive content that's more relevant to your context
+              </DialogDescription>
+            </DialogHeader>
+            <LocalizationForm />
+          </DialogContent>
+        </Dialog>
+        <Badge variant={type === 'pathway' ? 'default' : 'secondary'}>
+          {type}
+        </Badge>
+      </div>
     </div>
     <p className="text-sm text-muted-foreground mb-4">{description}</p>
 
