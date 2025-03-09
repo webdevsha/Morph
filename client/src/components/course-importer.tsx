@@ -5,19 +5,40 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export function CourseImporter() {
   const [url, setUrl] = useState("");
   const [background, setBackground] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showBackgroundDialog, setShowBackgroundDialog] = useState(false);
   const { toast } = useToast();
   const [, setLocation] = useLocation();
 
-  const handleImport = async () => {
-    if (!url.trim() || !background.trim()) {
+  const handleUrlSubmit = () => {
+    if (!url.trim()) {
       toast({
         title: "Please fill in all fields",
-        description: "Both URL and background are required",
+        description: "BlueDot course URL is required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setShowBackgroundDialog(true);
+  };
+
+  const handleImport = async () => {
+    if (!background.trim()) {
+      toast({
+        title: "Please fill in all fields",
+        description: "Background information is required",
         variant: "destructive",
       });
       return;
@@ -29,8 +50,8 @@ export function CourseImporter() {
       localStorage.setItem('importUrl', url);
       localStorage.setItem('userBackground', background);
 
-      // Redirect to the customized unit page
-      setLocation('/customized-unit');
+      // Redirect to the BlueDot customization page
+      setLocation('/bluedot-customization');
 
       toast({
         title: "Importing Course Unit",
@@ -44,50 +65,70 @@ export function CourseImporter() {
       });
     } finally {
       setIsProcessing(false);
+      setShowBackgroundDialog(false);
     }
   };
 
   return (
-    <Card className="p-6 space-y-4">
-      <div>
-        <h3 className="text-lg font-semibold mb-2">Import BlueDot Course</h3>
-        <p className="text-sm text-muted-foreground">
-          Import a specific course unit from BlueDot and get a customized learning experience
-        </p>
-      </div>
-
-      <div className="space-y-4">
+    <>
+      <Card className="p-6 space-y-4">
         <div>
-          <Input
-            placeholder="Paste BlueDot course URL..."
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-          />
+          <h3 className="text-lg font-semibold mb-2">Import BlueDot Course</h3>
+          <p className="text-sm text-muted-foreground">
+            Import a specific course unit from BlueDot and get a customized learning experience
+          </p>
         </div>
 
-        <div>
-          <Input
-            placeholder="Your background (e.g., 'Policy Analyst in Tech Regulation')..."
-            value={background}
-            onChange={(e) => setBackground(e.target.value)}
-          />
-        </div>
+        <div className="space-y-4">
+          <div>
+            <Input
+              placeholder="Paste BlueDot course URL..."
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+            />
+          </div>
 
-        <Button 
-          className="w-full" 
-          onClick={handleImport}
-          disabled={isProcessing}
-        >
-          {isProcessing ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Processing...
-            </>
-          ) : (
-            'Import & Customize'
-          )}
-        </Button>
-      </div>
-    </Card>
+          <Button 
+            className="w-full" 
+            onClick={handleUrlSubmit}
+            disabled={isProcessing}
+          >
+            Import & Customize
+          </Button>
+        </div>
+      </Card>
+
+      <Dialog open={showBackgroundDialog} onOpenChange={setShowBackgroundDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Customize Your Learning Experience</DialogTitle>
+            <DialogDescription>
+              Tell us about your background to receive content that's relevant to your context
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <Input
+              placeholder="Your background (e.g., 'Policy Analyst in Tech Regulation')..."
+              value={background}
+              onChange={(e) => setBackground(e.target.value)}
+            />
+            <Button 
+              className="w-full" 
+              onClick={handleImport}
+              disabled={isProcessing}
+            >
+              {isProcessing ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                'Continue'
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

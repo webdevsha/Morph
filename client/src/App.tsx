@@ -12,6 +12,7 @@ import { ProtectedRoute } from "./lib/protected-route";
 import { PersonaSelector } from "@/components/persona-selector";
 import { NavBar } from "@/components/nav-bar";
 import Philosophy from "@/pages/philosophy";
+import BlueDotCustomization from "@/pages/bluedot-customization";
 import CustomizedUnit from "@/pages/customized-unit";
 
 function Router() {
@@ -24,7 +25,7 @@ function Router() {
         <Route path="/ecosystem" component={EcosystemMapper} />
         <Route path="/tools" component={Tools} />
         <Route path="/philosophy" component={Philosophy} />
-        <Route path="/customized-unit" component={CustomizedUnit} />
+        <Route path="/bluedot-customization" component={BlueDotCustomization} />
         <ProtectedRoute path="/dashboard" component={HomePage} />
         <Route component={NotFound} />
       </Switch>
