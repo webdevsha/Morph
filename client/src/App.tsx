@@ -15,13 +15,13 @@ import { NavBar } from "@/components/nav-bar";
 function Router() {
   return (
     <div className="min-h-screen flex flex-col">
-      <NavBar /> {/* Added NavBar component */}
+      <NavBar />
       <Switch>
         <Route path="/" component={PersonaSelector} />
         <Route path="/auth" component={AuthPage} />
+        <Route path="/ecosystem" component={EcosystemMapper} />
+        <Route path="/tools" component={Tools} />
         <ProtectedRoute path="/dashboard" component={HomePage} />
-        <ProtectedRoute path="/ecosystem" component={EcosystemMapper} />
-        <ProtectedRoute path="/tools" component={Tools} />
         <Route component={NotFound} />
       </Switch>
     </div>
