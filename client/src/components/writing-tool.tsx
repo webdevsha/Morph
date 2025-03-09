@@ -80,21 +80,21 @@ export function WritingTool() {
   };
 
   const handleIdeaSubmit = (newIdea: string) => {
-    if (ideas.length < 5) {
+    if (newIdea.trim()) {
       setIdeas([...ideas, newIdea]);
       toast({
         title: "Idea Added",
-        description: `${5 - ideas.length - 1} more ideas to go!`,
+        description: "Let's get AI feedback on your ideas!",
       });
     }
   };
 
   const handleHeadlineSubmit = (newHeadline: string) => {
-    if (headlines.length < 10) {
+    if (newHeadline.trim()) {
       setHeadlines([...headlines, newHeadline]);
       toast({
         title: "Headline Added",
-        description: `${10 - headlines.length - 1} more headlines to go!`,
+        description: "Let's get AI feedback on your headlines!",
       });
     }
   };
@@ -140,19 +140,30 @@ export function WritingTool() {
     );
   };
 
+  const renderStep = (
+    stepNumber: number,
+    title: string,
+    children: React.ReactNode
+  ) => (
+    <Card className="p-6 mb-8">
+      <h3 className="text-xl font-semibold pb-4 mb-6 border-b">
+        Step {stepNumber}: {title}
+      </h3>
+      {children}
+    </Card>
+  );
+
   return (
-    <div className="space-y-8">
-      <Card className="p-6">
-        <h2 className="text-2xl font-bold mb-6">BlueDot Writing Framework</h2>
+    <div className="max-w-4xl mx-auto p-6">
+      <h2 className="text-2xl font-bold mb-6">BlueDot Writing Framework</h2>
+      <p className="text-muted-foreground mb-8">
+        Get AI feedback at any step of your writing process. Each step is independent - feel free to start wherever you'd like!
+      </p>
 
-        {/* Step 1: Ideas and Audience Analysis */}
-        <section className="mb-12 space-y-6">
-          <h3 className="text-xl font-semibold pb-4 border-b">
-            Step 1: Top Ideas & Audience Analysis
-          </h3>
-
+      {/* Step 1: Ideas */}
+      {renderStep(1, "Generate Ideas & Analyze Audience", (
+        <div className="space-y-6">
           <div>
-            <h4 className="font-medium mb-2">Add Your Top 5 Ideas</h4>
             <div className="flex gap-2">
               <Input 
                 placeholder="Enter an idea"
@@ -164,11 +175,20 @@ export function WritingTool() {
                   }
                 }}
               />
-              <Button variant="outline" size="icon">
+              <Button 
+                variant="outline" 
+                size="icon"
+                onClick={() => {
+                  const input = document.querySelector('input') as HTMLInputElement;
+                  handleIdeaSubmit(input.value);
+                  input.value = '';
+                }}
+              >
                 <Pencil className="h-4 w-4" />
               </Button>
             </div>
-            <div className="mt-2">
+
+            <div className="mt-4">
               {ideas.map((idea, index) => (
                 <div key={index} className="flex items-center gap-2 mt-2">
                   <CheckCircle className="h-4 w-4 text-green-500" />
@@ -176,10 +196,10 @@ export function WritingTool() {
                 </div>
               ))}
             </div>
-            {ideas.length >= 3 && (
+
+            {ideas.length > 0 && (
               <Button
                 variant="outline"
-                size="sm"
                 className="mt-4 w-full"
                 onClick={() => generateAIFeedback('ideas', { ideas })}
                 disabled={isGenerating}
@@ -191,94 +211,76 @@ export function WritingTool() {
             {renderAIFeedback('ideas')}
           </div>
 
-          {ideas.length > 0 && (
-            <div className="space-y-4 mt-8">
-              <h4 className="font-medium">Select an Idea for Analysis</h4>
-              <div className="space-y-2">
-                {ideas.map((idea, index) => (
-                  <Button
-                    key={index}
-                    variant={selectedIdea === idea ? "default" : "outline"}
-                    className="w-full justify-start text-left"
-                    onClick={() => setSelectedIdea(idea)}
-                  >
-                    {idea}
-                  </Button>
-                ))}
-              </div>
-
-              {selectedIdea && (
-                <div className="space-y-4 pt-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      What does your target audience already understand?
-                    </label>
-                    <Textarea
-                      value={audienceAnalysis.understanding}
-                      onChange={(e) => setAudienceAnalysis({
-                        ...audienceAnalysis,
-                        understanding: e.target.value
-                      })}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      What will you not be explaining in the article?
-                    </label>
-                    <Textarea
-                      value={audienceAnalysis.notExplaining}
-                      onChange={(e) => setAudienceAnalysis({
-                        ...audienceAnalysis,
-                        notExplaining: e.target.value
-                      })}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Why would your target audience be interested?
-                    </label>
-                    <Textarea
-                      value={audienceAnalysis.interest}
-                      onChange={(e) => setAudienceAnalysis({
-                        ...audienceAnalysis,
-                        interest: e.target.value
-                      })}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      What takeaways will your audience have?
-                    </label>
-                    <Textarea
-                      value={audienceAnalysis.takeaways}
-                      onChange={(e) => setAudienceAnalysis({
-                        ...audienceAnalysis,
-                        takeaways: e.target.value
-                      })}
-                    />
-                  </div>
-                  <Button
-                    variant="outline"
-                    onClick={() => generateAIFeedback('audience', audienceAnalysis)}
-                    disabled={isGenerating}
-                    className="w-full"
-                  >
-                    <Sparkles className="h-4 w-4 mr-2" />
-                    Get AI Feedback on Audience Analysis
-                  </Button>
-                  {renderAIFeedback('audience')}
-                </div>
-              )}
+          <div className="space-y-4">
+            <h4 className="font-medium">Audience Analysis</h4>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                What does your target audience already understand?
+              </label>
+              <Textarea
+                value={audienceAnalysis.understanding}
+                onChange={(e) => setAudienceAnalysis({
+                  ...audienceAnalysis,
+                  understanding: e.target.value
+                })}
+              />
             </div>
-          )}
-        </section>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                What will you not be explaining?
+              </label>
+              <Textarea
+                value={audienceAnalysis.notExplaining}
+                onChange={(e) => setAudienceAnalysis({
+                  ...audienceAnalysis,
+                  notExplaining: e.target.value
+                })}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Why would they be interested?
+              </label>
+              <Textarea
+                value={audienceAnalysis.interest}
+                onChange={(e) => setAudienceAnalysis({
+                  ...audienceAnalysis,
+                  interest: e.target.value
+                })}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                What takeaways will they have?
+              </label>
+              <Textarea
+                value={audienceAnalysis.takeaways}
+                onChange={(e) => setAudienceAnalysis({
+                  ...audienceAnalysis,
+                  takeaways: e.target.value
+                })}
+              />
+            </div>
 
-        {/* Step 2: Headlines */}
-        <section className="mb-12 space-y-6">
-          <h3 className="text-xl font-semibold pb-4 border-b">
-            Step 2: Build 10 Headlines
-          </h3>
+            {audienceAnalysis.understanding && (
+              <Button
+                variant="outline"
+                onClick={() => generateAIFeedback('audience', audienceAnalysis)}
+                disabled={isGenerating}
+                className="w-full"
+              >
+                <Sparkles className="h-4 w-4 mr-2" />
+                Get AI Feedback on Audience Analysis
+              </Button>
+            )}
+            {renderAIFeedback('audience')}
+          </div>
+        </div>
+      ))}
 
+      {/* Step 2: Headlines */}
+      {renderStep(2, "Build Headlines", (
+        <div className="space-y-6">
           <div className="grid grid-cols-2 gap-4 bg-accent/10 p-4 rounded-lg">
             <div>
               <h4 className="font-medium">Guidelines:</h4>
@@ -291,7 +293,7 @@ export function WritingTool() {
             </div>
             <div className="text-sm">
               <span className="font-medium">Current Progress:</span>
-              <div>{headlines.length}/10 headlines created</div>
+              <div>{headlines.length} headlines created</div>
             </div>
           </div>
 
@@ -323,12 +325,12 @@ export function WritingTool() {
                 </div>
               ))}
             </ScrollArea>
+
             {headlines.length > 0 && (
               <Button
                 variant="outline"
-                size="sm"
                 className="mt-4 w-full"
-                onClick={() => generateAIFeedback('headlines', { headlines, selectedIdea })}
+                onClick={() => generateAIFeedback('headlines', { headlines })}
                 disabled={isGenerating}
               >
                 <Sparkles className="h-4 w-4 mr-2" />
@@ -337,14 +339,12 @@ export function WritingTool() {
             )}
             {renderAIFeedback('headlines')}
           </div>
-        </section>
+        </div>
+      ))}
 
-        {/* Step 3: Story Development */}
-        <section className="mb-12 space-y-6">
-          <h3 className="text-xl font-semibold pb-4 border-b">
-            Step 3: Your Story
-          </h3>
-
+      {/* Step 3: Story Development */}
+      {renderStep(3, "Develop Your Story", (
+        <div className="space-y-6">
           <div>
             <label className="block text-sm font-medium mb-1">
               What story are you trying to tell?
@@ -381,6 +381,7 @@ export function WritingTool() {
               })}
             />
           </div>
+
           {story.mainStory && (
             <Button
               variant="outline"
@@ -393,14 +394,12 @@ export function WritingTool() {
             </Button>
           )}
           {renderAIFeedback('story')}
-        </section>
+        </div>
+      ))}
 
-        {/* Step 4: Outline */}
-        <section className="space-y-6">
-          <h3 className="text-xl font-semibold pb-4 border-b">
-            Step 4: Scrappy Outline
-          </h3>
-
+      {/* Step 4: Outline */}
+      {renderStep(4, "Create Outline", (
+        <div className="space-y-6">
           <div>
             <label className="block text-sm font-medium mb-1">
               Final Headline
@@ -473,8 +472,8 @@ export function WritingTool() {
             </Button>
           )}
           {renderAIFeedback('outline')}
-        </section>
-      </Card>
+        </div>
+      ))}
     </div>
   );
 }
