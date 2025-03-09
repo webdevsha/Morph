@@ -4,16 +4,14 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 
-type CourseImporterProps = {
-  onCustomization: (customContent: any) => void;
-};
-
-export function CourseImporter({ onCustomization }: CourseImporterProps) {
+export function CourseImporter() {
   const [url, setUrl] = useState("");
   const [background, setBackground] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   const handleImport = async () => {
     if (!url.trim() || !background.trim()) {
@@ -27,22 +25,16 @@ export function CourseImporter({ onCustomization }: CourseImporterProps) {
 
     setIsProcessing(true);
     try {
-      const response = await fetch('/api/customize-unit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url, background })
-      });
+      // Store the values for the customized unit page
+      localStorage.setItem('importUrl', url);
+      localStorage.setItem('userBackground', background);
 
-      if (!response.ok) {
-        throw new Error('Failed to customize course unit');
-      }
-
-      const data = await response.json();
-      onCustomization(data);
+      // Redirect to the customized unit page
+      setLocation('/customized-unit');
 
       toast({
-        title: "Course Unit Imported",
-        description: "Your customized learning path is ready!",
+        title: "Importing Course Unit",
+        description: "Preparing your customized learning experience...",
       });
     } catch (error: any) {
       toast({
@@ -60,7 +52,7 @@ export function CourseImporter({ onCustomization }: CourseImporterProps) {
       <div>
         <h3 className="text-lg font-semibold mb-2">Import BlueDot Course</h3>
         <p className="text-sm text-muted-foreground">
-          Paste your BlueDot course URL and tell us about your background for a customized learning experience
+          Import a specific course unit from BlueDot and get a customized learning experience
         </p>
       </div>
 
@@ -72,7 +64,7 @@ export function CourseImporter({ onCustomization }: CourseImporterProps) {
             onChange={(e) => setUrl(e.target.value)}
           />
         </div>
-        
+
         <div>
           <Input
             placeholder="Your background (e.g., 'Policy Analyst in Tech Regulation')..."
