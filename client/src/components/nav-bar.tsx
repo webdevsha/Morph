@@ -22,14 +22,14 @@ export function NavBar() {
                   Ecosystem
                 </a>
               </Link>
-              <Link href="/tools">
-                <a className="text-sm font-medium text-muted-foreground hover:text-foreground">
-                  Tools
-                </a>
-              </Link>
               <Link href="/philosophy">
                 <a className="text-sm font-medium text-muted-foreground hover:text-foreground">
                   Our Philosophy
+                </a>
+              </Link>
+              <Link href="/future-works">
+                <a className="text-sm font-medium text-muted-foreground hover:text-foreground">
+                  Future Works
                 </a>
               </Link>
             </nav>
