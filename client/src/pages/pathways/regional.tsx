@@ -1,9 +1,9 @@
 import { PathwayLayout } from "@/components/pathway-layout";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Select } from "@/components/ui/select";
 import { Globe, Book, Users, Network } from "lucide-react";
 import { useState } from "react";
+import { Link } from "wouter";
 
 export default function RegionalPathway() {
   const [selectedRegion, setSelectedRegion] = useState("southeast-asia");
@@ -53,6 +53,22 @@ export default function RegionalPathway() {
           </p>
         </div>
 
+        {/* BlueDot Integration Card */}
+        <Card className="p-6 bg-primary/5 border-primary/20">
+          <div className="flex justify-between items-start">
+            <div>
+              <h2 className="text-xl font-semibold mb-2">BlueDot Integration Available</h2>
+              <p className="text-muted-foreground">
+                Access region-specific AI safety content through BlueDot's learning platform.
+              </p>
+            </div>
+            <Link href="/bluedot-customization">
+              <a className="text-primary hover:underline">Import Course →</a>
+            </Link>
+          </div>
+        </Card>
+
+        {/* Region Selector */}
         <Card className="p-6 border-primary/20">
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">Select Your Region</h2>
@@ -70,6 +86,7 @@ export default function RegionalPathway() {
           </div>
         </Card>
 
+        {/* Learning Modules */}
         <div className="grid gap-6">
           {modules.map((module, index) => (
             <Card key={index} className="p-6">
