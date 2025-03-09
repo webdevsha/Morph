@@ -26,8 +26,9 @@ type CareerProfileFormProps = {
 };
 
 export function CareerProfileForm({ onProfileSubmit }: CareerProfileFormProps) {
+  const userBackground = localStorage.getItem('userBackground');
   const [profile, setProfile] = useState<CareerProfile>({
-    currentRole: "",
+    currentRole: userBackground || "",
     yearsExperience: "",
     background: "",
     skills: "",

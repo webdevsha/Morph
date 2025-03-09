@@ -23,6 +23,7 @@ import { generateLocalizedResources, type LocalizationContext } from "@/lib/ai-l
 import { CareerProfileForm, type CareerProfile } from "@/components/career-profile-form";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useLocation } from "wouter";
+import React from 'react';
 
 type UserContext = {
   region: string;
@@ -335,8 +336,58 @@ export default function EcosystemMapper() {
     );
   }
 
-  // Filter pathways based on persona and userBackground
-  const basePathways = pathways?.filter(p => p.persona === selectedPersona) || [];
+  // Update basePathways generation to include AI Safety Fundamentals content
+  const basePathways = React.useMemo(() => {
+    const isUser = userBackground;
+    const isFirstTime = !localStorage.getItem('pathwaysGenerated');
+
+    if (!pathways || !isUser) return pathways?.filter(p => p.persona === selectedPersona) || [];
+
+    // Check if user has technical background from stored persona
+    const isTechnical = localStorage.getItem('selectedPersona') === 'technical';
+    const baseUrl = isTechnical 
+      ? 'https://course.aisafetyfundamentals.com/home/alignment'
+      : 'https://course.aisafetyfundamentals.com/home/governance';
+
+    const customPathways = [
+      {
+        id: 1,
+        title: isTechnical ? "AI Alignment Fundamentals" : "AI Governance Fundamentals",
+        description: `Tailored introduction to ${isTechnical ? 'technical AI alignment' : 'AI governance'} concepts, adapted for your ${userBackground} background.`,
+        type: "pathway",
+        persona: selectedPersona,
+        ecosystem_links: [
+          {
+            title: "AI Safety Fundamentals Course",
+            url: baseUrl,
+            type: "resource"
+          }
+        ],
+        resources: [
+          {
+            title: isTechnical ? "Technical Research Papers" : "Governance Framework",
+            provider: "AI Safety Fundamentals",
+            type: "Learning Materials",
+            url: `${baseUrl}/resources`
+          },
+          {
+            title: "Weekly Discussions",
+            provider: "AI Safety Fundamentals",
+            type: "Interactive Sessions",
+            url: `${baseUrl}/discussions`
+          }
+        ]
+      }
+    ];
+
+    if (isFirstTime) {
+      localStorage.setItem('pathwaysGenerated', 'true');
+      return customPathways;
+    }
+
+    return pathways?.filter(p => p.persona === selectedPersona) || [];
+  }, [pathways, selectedPersona, userBackground]);
+
 
   return (
     <div className="flex min-h-screen">
