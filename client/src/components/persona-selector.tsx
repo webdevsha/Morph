@@ -1,4 +1,4 @@
-import {  useLocation } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -70,50 +70,48 @@ export function PersonaSelector() {
           </div>
         </Card>
 
-        <div className="grid md:grid-cols-2 gap-12">
-          {/* Left side: Manual persona selection */}
-          <div className="space-y-8">
-            <h2 className="text-2xl font-semibold flex items-center gap-2">
-              <span>Choose Your Path</span> 
-              <span className="text-2xl">🎯</span>
-            </h2>
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2"> {/* Added grid-cols-2 for medium screens and up */}
-              {personas.map((persona) => (
-                <Card 
-                  key={persona.id}
-                  className="p-6 cursor-pointer hover:shadow-lg transition-all border-primary/20 hover:border-primary bg-primary/5"
-                  onClick={() => handlePersonaSelect(persona)}
-                >
-                  <div className="flex items-start gap-6">
-                    <img
-                      src={persona.image}
-                      alt={persona.id}
-                      className="w-32 h-32 object-cover rounded-lg"
-                    />
-                    <div className="flex-1">
-                      <h2 className="text-xl font-semibold mb-2">{persona.question}</h2>
-                      <p className="text-muted-foreground mb-4">{persona.description}</p>
-                      <Button className="w-full bg-primary/10 hover:bg-primary/20 text-primary hover:text-primary">
-                        Select Path ✨
-                      </Button>
-                    </div>
+        {/* Choose Your Path Section */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-semibold flex items-center gap-2 mb-6">
+            <span>Choose Your Path</span> 
+            <span className="text-2xl">🎯</span>
+          </h2>
+          <div className="grid grid-cols-1 gap-6">
+            {personas.map((persona) => (
+              <Card 
+                key={persona.id}
+                className="p-6 cursor-pointer hover:shadow-lg transition-all border-primary/20 hover:border-primary bg-primary/5"
+                onClick={() => handlePersonaSelect(persona)}
+              >
+                <div className="flex items-center gap-8">
+                  <img
+                    src={persona.image}
+                    alt={persona.id}
+                    className="w-40 h-40 object-cover rounded-lg"
+                  />
+                  <div className="flex-1">
+                    <h2 className="text-2xl font-semibold mb-3">{persona.question}</h2>
+                    <p className="text-muted-foreground text-lg mb-4">{persona.description}</p>
+                    <Button className="bg-primary/10 hover:bg-primary/20 text-primary hover:text-primary">
+                      Select Path ✨
+                    </Button>
                   </div>
-                </Card>
-              ))}
-            </div>
+                </div>
+              </Card>
+            ))}
           </div>
+        </div>
 
-          {/* Right side: Background analysis */}
-          <div className="space-y-8">
-            <h2 className="text-2xl font-semibold flex items-center gap-2">
-              <span>Get Personalized Path</span>
-              <span className="text-2xl">🎨</span>
-            </h2>
-            <BackgroundAnalyzer onPersonaSelect={(persona) => {
-              localStorage.setItem('selectedPersona', persona);
-              setLocation('/ecosystem');
-            }} />
-          </div>
+        {/* Get Personalized Path Section */}
+        <div className="space-y-6">
+          <h2 className="text-2xl font-semibold flex items-center gap-2">
+            <span>Get Personalized Path</span>
+            <span className="text-2xl">🎨</span>
+          </h2>
+          <BackgroundAnalyzer onPersonaSelect={(persona) => {
+            localStorage.setItem('selectedPersona', persona);
+            setLocation('/ecosystem');
+          }} />
         </div>
       </div>
     </div>
