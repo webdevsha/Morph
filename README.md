@@ -1,7 +1,9 @@
 # 🌐 Morph: AI Safety Education for Everyone  
 **Making AI safety relatable, actionable, and inclusive—no matter your background.**  
 
-![Morph Demo](https://via.placeholder.com/800x400.png?text=Jellyfish-themed+UI+with+policy+simulations)  
+This project is created for Women in AI Safety Hackathon by [Apart Research]([https://usemorph.replit.app/](https://www.apartresearch.com/event/women-in-ai-safety-hackathon)) 
+
+![Morph Demo]([https://via.placeholder.com/800x400.png?text=Jellyfish-themed+UI+with+policy+simulations](https://ik.imagekit.io/cbctech/Screenshot%202025-03-10%20at%208.05.56%E2%80%AFAM.png?updatedAt=1741565179297))  
 *Deployed Demo: [https://usemorph.replit.app](https://usemorph.replit.app/)*  
 
 ---
@@ -41,12 +43,8 @@ Morph is a **playful, culturally adaptive platform** that complements BlueDot’
 
 ---
 
-## 🎬 Getting Started  
+## 🎬 Getting Started/ Involved  
 1. **Try the Demo**:  
    Visit [https://usemorph.replit.app](https://usemorph.replit.app/) and select your region.  
 
-2. **Run Locally**:  
-   ```bash  
-   git clone https://github.com/your-repo/morph  
-   cd morph  
-   # Follow Replit setup guide  
+2. Email the team lead at hai@shafiranoh.com
